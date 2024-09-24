@@ -1,1 +1,2 @@
-print("Hello World")
+def hello() -> str:
+    return "Hello World"
