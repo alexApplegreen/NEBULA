@@ -1,5 +1,5 @@
 import unittest
-from src.facade import Facade
+from NEBULA.facade import Facade
 
 class MainTest(unittest.TestCase):
 
@@ -7,6 +7,3 @@ class MainTest(unittest.TestCase):
         facade = Facade()
         retVal = facade.hello()
         self.assertEqual(retVal, "Hello World")
-
-if __name__ == "__main__":
-    unittest.main()
