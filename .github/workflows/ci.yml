@@ -16,4 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Unittest
-        run: python3 -m unittest discover -s test
+        run: |
+          python3 -m pip install -e .
+          python3 -m unittest discover -s test
