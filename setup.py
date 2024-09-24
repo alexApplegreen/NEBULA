@@ -7,5 +7,4 @@ setup(
     author="Alexander Tepe"
     author_email="alexander.tepe@hotmail.de"
     packages=find_packages()
-    name=""
 )
