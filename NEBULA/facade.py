@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+
+"""
+facade.py:
+    Access to API functions which are visible to the user
+"""
+
+__author__      = "Alexander Tepe"
+__email__       = "alexander.tepe@hotmail.de"
+__copyright__   = "Copyright 2024, Planet Earth"
+
 from NEBULA.utils.logging import getLogger
 from NEBULA.core.legacy import flip_random_bits_in_model_weights, flip_single_number_float
 class Facade():

@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+
+"""
+legacy.py:
+    Original bit flip operations from the WSA example
+"""
+
+__author__      = "Tim Düe"
+
 import numpy as np
 import tensorflow as tf
 
