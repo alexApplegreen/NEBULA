@@ -18,6 +18,10 @@ import pkg_resources
 _loggers = {}
 
 def getLogger(name : str) -> logging.Logger:
+    """Get a logger instance with the given modulename
+    Only one logger per modulename will be assigned a handler
+    this way, the amount of resources consumed for libray imports stays slim
+    """
 
     if name not in _loggers:
         logger = logging.getLogger(name)
@@ -37,6 +41,15 @@ def getLogger(name : str) -> logging.Logger:
     return _loggers[name]
 
 def setLoggingLevel(level : int | str, name : str | None = None) -> None:
+    """change level of logger with given name
+    The log level determines the mininum level of messages to be logged
+    possible values are (increasing severity):
+        DEBUG
+        INFO
+        ERROR
+        CRITICAL
+    if name param is omitted, all loggers with assigned handlers will be set to specified level
+    """
     if name is None:
         for logger in _loggers.values():
             logger.setLevel(level)

@@ -7,5 +7,9 @@ setup(
     author="Alexander Tepe",
     author_email="alexander.tepe@hotmail.de",
     packages=find_packages(),
-    license="MIT"
+    license="MIT",
+    install_requires=[
+        "tensorflow",
+        "numpy",
+    ],
 )

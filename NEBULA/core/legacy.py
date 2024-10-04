@@ -3,6 +3,7 @@
 """
 legacy.py:
     Original bit flip operations from the WSA example
+    These implementations were left in to allow for benchmarking
 """
 
 __author__      = "Tim Düe"
