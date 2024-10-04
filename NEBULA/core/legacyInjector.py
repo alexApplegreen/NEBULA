@@ -15,7 +15,7 @@ from NEBULA.core.legacy import flip_random_bits_in_model_weights
 
 
 class LegacyInjector():
-    """Easy access to an errorinjector using the legacy implementation
+    """Easy access to an error injector using the legacy implementation
     """
     _logger = None
 
