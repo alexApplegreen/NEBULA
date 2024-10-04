@@ -13,6 +13,7 @@ from keras import Model
 from NEBULA.utils.logging import getLogger
 from NEBULA.core.legacy import flip_random_bits_in_model_weights
 
+
 class LegacyInjector():
     """Easy access to an errorinjector using the legacy implementation
     """

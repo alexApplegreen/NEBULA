@@ -2,6 +2,7 @@ import unittest
 import logging
 from NEBULA import getLogger, setLoggingLevel
 
+
 class LoggingTest(unittest.TestCase):
 
     logger = getLogger(__name__)
