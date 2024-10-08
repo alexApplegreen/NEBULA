@@ -44,4 +44,3 @@ class History(deque):
 
     def size(self):
         return len(self)
-
