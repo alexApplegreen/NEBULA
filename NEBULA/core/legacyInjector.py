@@ -9,7 +9,9 @@ __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
+import numpy as np
 from keras import Model
+from keras.src.models.cloning import clone_model
 
 from NEBULA.core.BaseInjector import BaseInjector
 from NEBULA.core.legacy import flip_random_bits_in_model_weights
@@ -30,6 +32,9 @@ class LegacyInjector(BaseInjector):
     def injectError(self) -> Model:
         """calls the og implementation and appends the new changed model to the history"""
         self._logger.debug(f"Injecting error with probability of {self._probability}")
-        self._model = flip_random_bits_in_model_weights(self._model, self._probability, self._check)
-        self._history.push(self._model)
-        return self._model
+        # create deep copy of model to not edit it in place
+        modelCopy = clone_model(self._model)
+        modelCopy.set_weights(self._model.get_weights())
+        alteredModel = flip_random_bits_in_model_weights(modelCopy, self._probability, self._check)
+        self._history.push(alteredModel)
+        return alteredModel

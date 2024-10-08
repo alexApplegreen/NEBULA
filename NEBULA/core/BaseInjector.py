@@ -33,7 +33,7 @@ class BaseInjector(ABC):
         self._model = model
         self._probability = probability
         self._history = History()
-        self._history.push(self._model)
+        self._history.push(model)
 
     @abstractmethod
     def injectError(self) -> Model:
