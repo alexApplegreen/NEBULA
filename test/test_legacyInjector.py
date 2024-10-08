@@ -49,3 +49,15 @@ class LegacyInjectorTest(unittest.TestCase):
         for orig, new in zip(origWeights, undoneWeights):
             self.assertTrue(np.allclose(orig, new))
 
+    def test_undoCanCascade(self):
+        li = LegacyInjector(self._model, probability=1.0)
+        origWeights = li.model.get_weights()
+        li.injectError()
+        li.undo()
+        li.injectError()
+        li.undo()
+
+        undoneWeights = li.model.get_weights()
+
+        for orig, new in zip(origWeights, undoneWeights):
+            self.assertTrue(np.allclose(orig, new))
