@@ -11,5 +11,6 @@ setup(
     install_requires=[
         "tensorflow",
         "numpy",
+        "python-dotenv"
     ],
 )
