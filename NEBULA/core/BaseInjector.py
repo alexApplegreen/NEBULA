@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 BaseInjector.py:
@@ -45,10 +45,6 @@ class BaseInjector(ABC):
         return self._probability
 
     @property
-    def check(self):
-        return self._check
-
-    @property
     def history(self):
         return self._history
 
@@ -59,7 +55,3 @@ class BaseInjector(ABC):
     @probability.setter
     def probability(self, probability):
         self._probability = probability
-
-    @check.setter
-    def check(self, check):
-        self._check = check

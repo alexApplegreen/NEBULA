@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 logging.py:
@@ -62,7 +62,7 @@ def getLogger(name: str) -> logging.Logger:
 
 def setLoggingLevel(logLevel: int | str, name: str | None = None) -> None:
     """change level of logger with given name
-    The log level determines the mininum level of messages to be logged
+    The log level determines the minimum level of messages to be logged
     possible values are (increasing severity):
         DEBUG
         INFO
