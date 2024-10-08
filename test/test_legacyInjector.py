@@ -1,6 +1,8 @@
 import unittest
+
 import keras
 import numpy as np
+
 from NEBULA.core.legacyInjector import LegacyInjector
 
 
@@ -16,24 +18,46 @@ class LegacyInjectorTest(unittest.TestCase):
             self._model = keras.Model(inputs=inputs, outputs=outputs)
 
     def test_injectErrorWith0ProbabilityDoesNotChangeModel(self):
-        li = LegacyInjector(self._model)
-        li.probability = 0.0
-        modelAltered = li.injectError()
-        weightsOld = self._model.get_weights()
-        weightsNew = modelAltered.get_weights()
+        li = LegacyInjector(self._model, probability=0.0)
+        weightsOld = li.model.get_weights()
+        li.injectError()
+        weightsNew = li.model.get_weights()
         for orig, new in zip(weightsNew, weightsOld):
             self.assertTrue(np.allclose(orig, new))
 
     def test_injectErrorDoesChangeModel(self):
-        li = LegacyInjector(self._model)
-        li.probability = 1.0
+        li = LegacyInjector(self._model, probability=1.0)
+        weightsOld = li.model.get_weights()
         modelAltered = li.injectError()
-        weightsOld = self._model.get_weights()
         weightsNew = modelAltered.get_weights()
-        changed = False
-        for orig, new in zip(weightsNew, weightsOld):
-            changed = np.allclose(orig, new)
-            if changed:
+        allSame = True
+        for orig, new in zip(weightsOld, weightsNew):
+            allSame = np.allclose(orig, new)
+            if not allSame:
                 break
 
-        self.assertTrue(changed)
+        self.assertFalse(allSame)
+
+    def test_changeIsReversibleWithActualModel(self):
+        li = LegacyInjector(self._model, probability=1.0)
+        origWeights = self._model.get_weights()
+        _ = li.injectError()
+
+        undoneModel = li.undo()
+        undoneWeights = undoneModel.get_weights()
+
+        for orig, new in zip(origWeights, undoneWeights):
+            self.assertTrue(np.allclose(orig, new))
+
+    def test_undoCanCascade(self):
+        li = LegacyInjector(self._model, probability=1.0)
+        origWeights = li.model.get_weights()
+        li.injectError()
+        li.undo()
+        li.injectError()
+        li.undo()
+
+        undoneWeights = li.model.get_weights()
+
+        for orig, new in zip(origWeights, undoneWeights):
+            self.assertTrue(np.allclose(orig, new))

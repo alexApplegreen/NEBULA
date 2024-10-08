@@ -43,7 +43,7 @@ def flip_random_bits_in_model_weights(model, probability = 0.001, check=-1):
         new_weights = []
         layer_idx = 1
         for weight_tensor in layer_weights:
-            print("Working on layer ", layer_idx, " out of ", len(layer_weights))
+            # print("Working on layer ", layer_idx, " out of ", len(layer_weights))
             layer_idx = layer_idx + 1
             if weight_tensor.dtype == np.float32:
                 shape = weight_tensor.shape

@@ -13,6 +13,8 @@ from abc import ABC, abstractmethod
 
 from keras import Model
 
+from NEBULA.core.history import History
+
 
 class BaseInjector(ABC):
     """Abstract base class for all injectors
@@ -21,7 +23,7 @@ class BaseInjector(ABC):
 
     _model = None
     _probability = 0.01
-    _history = []
+    _history = None
 
     def __init__(
             self,
@@ -30,11 +32,17 @@ class BaseInjector(ABC):
     ):
         self._model = model
         self._probability = probability
-        self._history.append(self._model)
+        self._history = History()
+        self._history.push(model)
 
     @abstractmethod
     def injectError(self) -> Model:
         pass
+
+    def undo(self) -> Model:
+        self._history.revert()
+        self._model = self._history.peek()
+        return self._model
 
     @property
     def model(self):
@@ -43,10 +51,6 @@ class BaseInjector(ABC):
     @property
     def probability(self):
         return self._probability
-
-    @property
-    def history(self):
-        return self._history
 
     @model.setter
     def model(self, model):
