@@ -9,16 +9,32 @@ __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
-from abc import ABC
+from abc import ABC, abstractmethod
+
+from keras import Model
+
 
 class BaseInjector(ABC):
     """Abstract base class for all injectors
+    Injectors can be configured using the setter methods
     """
 
     _model = None
     _probability = 0.01
-    _check = -1
     _history = []
+
+    def __init__(
+            self,
+            model,
+            probability=_probability,
+    ):
+        self._model = model
+        self._probability = probability
+        self._history.append(self._model)
+
+    @abstractmethod
+    def injectError(self) -> Model:
+        pass
 
     @property
     def model(self):

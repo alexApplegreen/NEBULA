@@ -21,12 +21,13 @@ from NEBULA.core.legacy import flip_random_bits_in_model_weights
 class LegacyInjector(BaseInjector):
     """Easy access to an error injector using the legacy implementation
     """
-    _logger : Logger = None
+    _logger = None
+    _check = -1
 
-    def __init__(self, model : Model) -> None:
+    def __init__(self, model: Model, probability=0.01, check=-1) -> None:
+        super().__init__(model, probability)
         self._logger = getLogger(__name__)
-        self._model = model
-        self._history.append(model)
+        self._check = check
 
     def injectError(self) -> Model:
         """calls the og implementation and appends the new changed model to the history"""

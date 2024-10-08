@@ -13,5 +13,5 @@ class LegacyInjectorTest(unittest.TestCase):
 
         li = LegacyInjector(model)
         li.probability = 0.0
-        modelAlterted = li.injectError()
-        self.assertEqual(model, modelAlterted)
+        modelAltered = li.injectError()
+        self.assertEqual(model, modelAltered)
