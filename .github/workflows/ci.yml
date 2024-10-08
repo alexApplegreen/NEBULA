@@ -28,4 +28,5 @@ jobs:
       - name: Lint
         run: |
           python3 -m pip install -e .
+          python3 -m pip install flake8
           flake8 NEBULA
