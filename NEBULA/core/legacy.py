@@ -38,8 +38,7 @@ def flip_single_number_float(number_to_flip, data_type = 32, probability = 0.001
         return bitcast_to_float
 
 def flip_random_bits_in_model_weights(model, probability = 0.001, check=-1):
-    modelCopy = model
-    for layer in modelCopy.layers:
+    for layer in model.layers:
         layer_weights = layer.get_weights()
         new_weights = []
         layer_idx = 1
@@ -56,4 +55,4 @@ def flip_random_bits_in_model_weights(model, probability = 0.001, check=-1):
             else:
                 new_weights.append(weight_tensor)
         layer.set_weights(new_weights)
-    return modelCopy
+    return model
