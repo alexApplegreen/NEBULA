@@ -9,7 +9,6 @@ __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
-import numpy as np
 from keras import Model
 from keras.src.models.cloning import clone_model
 
