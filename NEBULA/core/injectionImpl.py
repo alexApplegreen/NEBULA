@@ -5,13 +5,11 @@ from keras.src.models import Model
 def injectToWeights(model: Model, probability: float) -> Model:
     """modify weights of model in place using concurrency
     """
-    threads = []
     for layer in model.layers:
         thread = Thread(
             target=_concurrentErrorInjection,
             args=(layer, probability)
         )
-        threads.append(thread)
         thread.start()
         thread.join()
 
