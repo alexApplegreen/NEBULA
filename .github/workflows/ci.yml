@@ -19,3 +19,13 @@ jobs:
         run: |
           python3 -m pip install -e .
           python3 -m unittest discover -s test
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint
+        run: |
+          python3 -m pip install -e .
+          flake8 NEBULA
