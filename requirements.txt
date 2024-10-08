@@ -2,6 +2,7 @@ absl-py==2.1.0
 astunparse==1.6.3
 certifi==2024.8.30
 charset-normalizer==3.3.2
+flake8==7.1.1
 flatbuffers==24.3.25
 gast==0.6.0
 google-pasta==0.2.0
@@ -13,6 +14,7 @@ libclang==18.1.1
 Markdown==3.7
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
+mccabe==0.7.0
 mdurl==0.1.2
 ml-dtypes==0.4.1
 namex==0.0.8
@@ -21,7 +23,10 @@ opt-einsum==3.3.0
 optree==0.12.1
 packaging==24.1
 protobuf==4.25.5
+pycodestyle==2.12.1
+pyflakes==3.2.0
 Pygments==2.18.0
+python-dotenv==1.0.1
 requests==2.32.3
 rich==13.8.1
 setuptools==75.1.0

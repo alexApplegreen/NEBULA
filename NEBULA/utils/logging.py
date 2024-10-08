@@ -10,11 +10,30 @@ __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
 import logging
+import os
+
+from dotenv import load_dotenv
 
 # init logger once when lib is imported first
 # logging not exposed to the user on purpose
 
 _loggers = {}
+load_dotenv()
+_LOG_LEVEL = logging.INFO
+try:
+    level = os.environ["NEBULA_LOG_LEVEL"].upper()
+    if level == "DEBUG":
+        _LOG_LEVEL = logging.DEBUG
+    elif level == "INFO":
+        _LOG_LEVEL = logging.INFO
+    elif level == "WARNING":
+        _LOG_LEVEL = logging.WARNING
+    elif level == "ERROR":
+        _LOG_LEVEL = logging.ERROR
+    elif level == "CRITICAL":
+        _LOG_LEVEL = logging.CRITICAL
+except KeyError:
+    print(f"Could not map log level from environment.")
 
 def getLogger(name : str) -> logging.Logger:
     """Get a logger instance with the given modulename
@@ -24,7 +43,7 @@ def getLogger(name : str) -> logging.Logger:
 
     if name not in _loggers:
         logger = logging.getLogger(name)
-        logger.setLevel(logging.INFO)
+        logger.setLevel(_LOG_LEVEL)
 
         if not logger.hasHandlers():
             console_handler = logging.StreamHandler()
@@ -39,7 +58,7 @@ def getLogger(name : str) -> logging.Logger:
 
     return _loggers[name]
 
-def setLoggingLevel(level : int | str, name : str | None = None) -> None:
+def setLoggingLevel(logLevel : int | str, name : str | None = None) -> None:
     """change level of logger with given name
     The log level determines the mininum level of messages to be logged
     possible values are (increasing severity):
@@ -51,7 +70,7 @@ def setLoggingLevel(level : int | str, name : str | None = None) -> None:
     """
     if name is None:
         for logger in _loggers.values():
-            logger.setLevel(level)
+            logger.setLevel(logLevel)
     else:
         if name in _loggers:
-            _loggers[name].setLevel(level)
+            _loggers[name].setLevel(logLevel)
