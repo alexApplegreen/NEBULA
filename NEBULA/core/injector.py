@@ -9,10 +9,11 @@ __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
+from NEBULA.core.BaseInjector import BaseInjector
 from NEBULA.utils.logging import getLogger
 
 
-class Injector():
+class Injector(BaseInjector):
 
     _logger = None
 

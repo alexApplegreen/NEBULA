@@ -11,6 +11,7 @@ class LegacyInjectorTest(unittest.TestCase):
         outputs = keras.layers.Dense(5, activation="softmax")(x)
         model = keras.Model(inputs=inputs, outputs=outputs)
 
-        li = LegacyInjector()
-        modelAlterted = li.injectError(model, 0.0, -1)
+        li = LegacyInjector(model)
+        li.probability = 0.0
+        modelAlterted = li.injectError()
         self.assertEqual(model, modelAlterted)
