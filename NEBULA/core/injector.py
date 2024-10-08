@@ -19,7 +19,7 @@ class Injector(BaseInjector):
 
     _logger = None
 
-    def __init__(self, model : Model, probability : float = 0.01) -> None:
+    def __init__(self, model: Model, probability: float = 0.01) -> None:
         super().__init__(model, probability)
         self._logger = getLogger(__name__)
 
