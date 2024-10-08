@@ -35,6 +35,6 @@ class LegacyInjector(BaseInjector):
         # create deep copy of model to not edit it in place
         modelCopy = clone_model(self._model)
         modelCopy.set_weights(self._model.get_weights())
-        alteredModel = flip_random_bits_in_model_weights(modelCopy, self._probability, self._check)
-        self._history.push(alteredModel)
-        return alteredModel
+        modelCopy = flip_random_bits_in_model_weights(modelCopy, self._probability, self._check)
+        self._history.push(modelCopy)
+        return modelCopy
