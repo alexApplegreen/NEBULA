@@ -10,7 +10,6 @@ __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
 import logging
-import pkg_resources
 
 # init logger once when lib is imported first
 # logging not exposed to the user on purpose
