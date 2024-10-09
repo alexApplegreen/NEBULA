@@ -20,5 +20,9 @@ class InjectorTest(unittest.TestCase):
         _ = injector.injectError()
         weightsNew = injector.model.get_weights()
 
+        allSame = True
         for orig, new in zip(weightsOrig, weightsNew):
-            self.assertTrue(np.allclose(orig, new))
+            allSame = self.assertTrue(np.allclose(orig, new))
+            if not allSame:
+                break
+        self.assertFalse(allSame)
