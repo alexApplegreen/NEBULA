@@ -46,7 +46,7 @@ class InjectionImpl:
         layer.set_weights(newWeights)
 
     @staticmethod
-    def _flipFloat(number_to_flip, data_type = 32, probability = 0.001, check = -1):
+    def _flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
         random_numbers = np.random.rand(data_type + 1)
         flipped_bit_positions = np.where(random_numbers < probability)[0]
         if flipped_bit_positions.size == 0:

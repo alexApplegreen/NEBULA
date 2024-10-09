@@ -42,6 +42,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
+
 def getLogger(name: str) -> logging.Logger:
     """Get a logger instance with the given modulename
     Only one logger per modulename will be assigned a handler

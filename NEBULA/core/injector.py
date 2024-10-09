@@ -12,7 +12,6 @@ __copyright__   = "Copyright 2024, Planet Earth"
 from keras import Model
 from keras.src.models.cloning import clone_model
 
-from NEBULA.core import injectionImpl
 from NEBULA.core.BaseInjector import BaseInjector
 from NEBULA.core.injectionImpl import InjectionImpl
 from NEBULA.utils.logging import getLogger
