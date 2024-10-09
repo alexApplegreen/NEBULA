@@ -18,8 +18,10 @@ from dotenv import load_dotenv
 # logging not exposed to the user on purpose
 
 _loggers = {}
+
 load_dotenv()
 _LOG_LEVEL = logging.INFO
+
 try:
     level = os.environ["NEBULA_LOG_LEVEL"].upper()
     if level == "DEBUG":
@@ -35,6 +37,10 @@ try:
 except KeyError as e:
     print(f"Could not map log level from environment: {e.args[0]}")
 
+logging.basicConfig(
+    level=_LOG_LEVEL,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 def getLogger(name: str) -> logging.Logger:
     """Get a logger instance with the given modulename
@@ -48,10 +54,7 @@ def getLogger(name: str) -> logging.Logger:
 
         if not logger.hasHandlers():
             console_handler = logging.StreamHandler()
-            console_handler.setLevel(logging.INFO)
-
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-            console_handler.setFormatter(formatter)
+            # console_handler.setLevel(_LOG_LEVEL)
 
             logger.addHandler(console_handler)
 
