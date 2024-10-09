@@ -30,7 +30,7 @@ class InjectionImpl:
 
     @staticmethod
     def _concurrentErrorInjection(layer, probability):
-        InjectionImpl._logger.info(f"started worker thread {get_ident()} with BER of {probability}")
+        InjectionImpl._logger.debug(f"started worker thread {get_ident()} with BER of {probability}")
 
         newWeights = []
         for weight in layer.get_weights():

@@ -20,3 +20,7 @@ execute unittests:
 ```(bash)
 python3 -m unittest discover -s test
 ```
+
+### Samples
+There are some usage examples in the samples folder.
+The benchmark.py file executes one injection in every weight of every layer of the NN and prints out the runtime
