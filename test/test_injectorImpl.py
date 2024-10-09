@@ -28,5 +28,9 @@ class TestInjectorImpl(unittest.TestCase):
         InjectionImpl._concurrentErrorInjection(modelCopy.layers[1], probability=1.0)
         newWeights = modelCopy.get_weights()
 
+        allSame = True
         for orig, new in zip(origWeights, newWeights):
-            self.assertTrue(np.allclose(orig, new))
+            allSame = np.allclose(orig, new)
+            if not allSame:
+                break
+        self.assertFalse(allSame)
