@@ -1,3 +1,0 @@
-[submodule "sample/MNIST-for-Numpy"]
-	path = sample/MNIST_UTIL
-	url = git@github.com:hsjeong5/MNIST-for-Numpy.git
