@@ -1,7 +1,8 @@
+import multiprocessing as mp
+from threading import get_ident
+
 import numpy as np
 import tensorflow as tf
-
-from threading import Thread, get_ident
 from keras.src.models import Model
 
 from NEBULA.utils.logging import getLogger
@@ -12,25 +13,29 @@ class InjectionImpl:
     _logger = getLogger(__name__)
 
     @staticmethod
-    def injectToWeights(model: Model, probability: float) -> Model:
-        """modify weights of model in place using concurrency
-        """
-        threads = []
-        for layer in model.layers:
-            thread = Thread(
-                target=InjectionImpl._concurrentErrorInjection,
-                args=(layer, probability)
-            )
-            thread.start()
+    def injectToWeights(model: Model, probability: float, processPool: mp.Pool) -> Model:
+        """Modify weights of model using multiprocessing."""
+        # Apply the error injection function to each layer in parallel
+        results = processPool.starmap_async(
+            InjectionImpl._concurrentErrorInjection,
+            [(layer, probability) for layer in model.layers]
+        )
 
-        for t in threads:
-            t.join()
+        # TODO are these necessary?
+        processPool.close()
+        processPool.join()
+
+        for result in results.get():
+            layer_name, modified_weights = result
+            layer = model.get_layer(name=layer_name)
+            layer.set_weights(modified_weights)
 
         return model
 
+
     @staticmethod
     def _concurrentErrorInjection(layer, probability):
-        InjectionImpl._logger.debug(f"started worker thread {get_ident()} with BER of {probability}")
+        InjectionImpl._logger.info(f"started worker process {get_ident()} on layer {layer.name} with BER of {probability}")
 
         newWeights = []
         for weight in layer.get_weights():
@@ -43,7 +48,7 @@ class InjectionImpl:
                 newWeights.append(newWeight)
             else:
                 newWeights.append(weight)
-        layer.set_weights(newWeights)
+        return layer.name, newWeights
 
     @staticmethod
     def _flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
