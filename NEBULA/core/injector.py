@@ -42,7 +42,6 @@ class Injector(BaseInjector):
     def __del__(self):
         self._process_pool.terminate()
 
-
     def injectError(self) -> Model:
         """ Method to inject errors into the model
         Creates a deep copy of the model and passes it to the

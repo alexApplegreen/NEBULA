@@ -56,14 +56,15 @@ class InjectionImpl:
 
         return model
 
-
     @staticmethod
     def _concurrentErrorInjection(layer, probability):
         """Routine which is executed by the subprocesses
         this function modifies the layer's weights with a given probability and
         returns the modified weights.
         """
-        InjectionImpl._logger.info(f"started worker process {get_ident()} on layer {layer.name} with BER of {probability}")
+        InjectionImpl._logger.info(
+            f"started worker process {get_ident()} on layer {layer.name} with BER of {probability}"
+        )
 
         newWeights = []
         for weight in layer.get_weights():
