@@ -1,36 +1,69 @@
+#!/usr/bin/env python3
+
+"""
+InjectionImpl.py
+    Actual modification of model weights is done here
+"""
+
+__author__      = "Alexander Tepe"
+__email__       = "alexander.tepe@hotmail.de"
+__copyright__   = "Copyright 2024, Planet Earth"
+
+import multiprocessing as mp
+from threading import get_ident
+
 import numpy as np
 import tensorflow as tf
-
-from threading import Thread, get_ident
 from keras.src.models import Model
 
 from NEBULA.utils.logging import getLogger
 
 
 class InjectionImpl:
+    """Implementation of bit error injection to weights
+    Since Tensorflow sets the GIL Lock for threads that reference model memory,
+    this implementation uses processes
+
+    Idea: Create deep copy of model before calling injection functions.
+    Since processes operate on their own memory, one process per layer can modify
+    the model's weights. When all processes are done, the model is written back
+    """
 
     _logger = getLogger(__name__)
 
+    # TODO
     @staticmethod
-    def injectToWeights(model: Model, probability: float) -> Model:
-        """modify weights of model in place using concurrency
+    def injectToWeights(model: Model, probability: float, processPool: mp.Pool) -> Model:
+        """Modify weights of model using multiprocessing.
+        Tensorflow locks GIL which blocks all threads which are not tensorflow
+        control flow. Processes can still run.
         """
-        threads = []
-        for layer in model.layers:
-            thread = Thread(
-                target=InjectionImpl._concurrentErrorInjection,
-                args=(layer, probability)
-            )
-            thread.start()
+        # Apply the error injection function to each layer in parallel
+        results = processPool.starmap_async(
+            InjectionImpl._concurrentErrorInjection,
+            [(layer, probability) for layer in model.layers]
+        )
 
-        for t in threads:
-            t.join()
+        # TODO are these necessary? starmap should block until processes return
+        processPool.close()
+        processPool.join()
+
+        # summarize results from processes
+        for result in results.get():
+            layer_name, modified_weights = result
+            layer = model.get_layer(name=layer_name)
+            layer.set_weights(modified_weights)
 
         return model
 
+
     @staticmethod
     def _concurrentErrorInjection(layer, probability):
-        InjectionImpl._logger.debug(f"started worker thread {get_ident()} with BER of {probability}")
+        """Routine which is executed by the subprocesses
+        this function modifies the layer's weights with a given probability and
+        returns the modified weights.
+        """
+        InjectionImpl._logger.info(f"started worker process {get_ident()} on layer {layer.name} with BER of {probability}")
 
         newWeights = []
         for weight in layer.get_weights():
@@ -43,10 +76,13 @@ class InjectionImpl:
                 newWeights.append(newWeight)
             else:
                 newWeights.append(weight)
-        layer.set_weights(newWeights)
+        return layer.name, newWeights
 
     @staticmethod
     def _flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
+        """Helper function which flips bits in a given memory range with a given probability
+        returns the modified float number as a tf.tensor
+        """
         random_numbers = np.random.rand(data_type + 1)
         flipped_bit_positions = np.where(random_numbers < probability)[0]
         if flipped_bit_positions.size == 0:

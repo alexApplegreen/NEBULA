@@ -37,3 +37,8 @@ The benchmark can be executed with (assuming inside the samples folder):
 ```bash
 python3 benchmark.py
 ```
+
+inside the mnist_example.py the framework is used to inject errors into an existing mnist network.
+The sample is implemented such that a model can be read in via a .h5 file, also the images to handwritten
+numbers must be supplied by the user. The images must have dimensions of 28x28 pixels and be
+binary greyscaled.

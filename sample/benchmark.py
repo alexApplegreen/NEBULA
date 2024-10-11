@@ -1,8 +1,8 @@
-import keras
 import time
 
+import keras
+
 from NEBULA import LegacyInjector, Injector
-from NEBULA.core import legacyInjector
 
 if __name__ == '__main__':
     inputs = keras.Input(shape=(37,))

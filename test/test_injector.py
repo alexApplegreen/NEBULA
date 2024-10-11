@@ -14,7 +14,7 @@ class InjectorTest(unittest.TestCase):
             outputs = keras.layers.Dense(5, activation="softmax")(x)
             self._model = keras.Model(inputs=inputs, outputs=outputs)
 
-    def test_injectorWithZeroProbDoesNotChangeModel(self):
+    def test_injectorWithHundredProbChangesModel(self):
         injector = Injector(self._model, 1.0)
         weightsOrig = injector.model.get_weights()
         _ = injector.injectError()
@@ -22,7 +22,20 @@ class InjectorTest(unittest.TestCase):
 
         allSame = True
         for orig, new in zip(weightsOrig, weightsNew):
-            allSame = self.assertTrue(np.allclose(orig, new))
+            allSame = np.allclose(orig, new)
+            if not allSame:
+                break
+        self.assertFalse(allSame)
+
+    def test_ChangedModelIsReturned(self):
+        injector = Injector(self._model, 1.0)
+        weightsOrig = self._model.get_weights()
+        changedModel = injector.injectError()
+        weightsChanged = changedModel.get_weights()
+
+        allSame = True
+        for orig, new in zip(weightsOrig, weightsChanged):
+            allSame = np.allclose(orig, new)
             if not allSame:
                 break
         self.assertFalse(allSame)
