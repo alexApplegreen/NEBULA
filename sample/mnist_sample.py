@@ -27,7 +27,7 @@ if __name__ == '__main__':
     model = load_model('sampledata/mnist_model.h5', compile=False)
     weightsBefore = model.get_weights()
 
-    injector = Injector(model, probability=0.001)
+    injector = Injector(model, probability=0.0001)
     model = injector.injectError()
     weightsAfter = model.get_weights()
 

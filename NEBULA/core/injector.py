@@ -2,7 +2,7 @@
 
 """
 injector.py
-    injector to use multithreading to inject errors
+    injector to use multiprocessing to inject errors
 """
 
 __author__      = "Alexander Tepe"
@@ -22,6 +22,14 @@ import multiprocessing as mp
 # TODO use reference to weights instead modifying the whole model
 
 class Injector(BaseInjector):
+    """Class Injector:
+    encapsulates all injection and other comfort functions towards
+    modifying a model
+    The injector will create a processpool at instantiation with one process
+    per layer of the given model. These are used to inject errors into the model.
+    This class also yields access to the history of changes made to the model through
+    error injection
+    """
 
     _logger = None
     _process_pool = None
@@ -36,8 +44,14 @@ class Injector(BaseInjector):
 
 
     def injectError(self) -> Model:
+        """ Method to inject errors into the model
+        Creates a deep copy of the model and passes it to the
+        injection implementation, which uses the processes from the pool
+        to modify the model.
+        Also adds the resulting model to the history
+        """
         self._logger.debug(f"Injecting error with probability of {self._probability}")
-        # create copy
+        # create deep copy
         modelCopy = clone_model(self._model)
         modelCopy.set_weights(self._model.get_weights())
 

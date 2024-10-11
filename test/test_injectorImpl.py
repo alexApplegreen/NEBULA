@@ -25,8 +25,7 @@ class TestInjectorImpl(unittest.TestCase):
         modelCopy.set_weights(self._model.get_weights())
         origWeights = self._model.get_weights()
 
-        InjectionImpl._concurrentErrorInjection(modelCopy.layers[1], probability=1.0)
-        newWeights = modelCopy.get_weights()
+        layerName, newWeights = InjectionImpl._concurrentErrorInjection(modelCopy.layers[1], probability=1.0)
 
         allSame = True
         for orig, new in zip(origWeights, newWeights):

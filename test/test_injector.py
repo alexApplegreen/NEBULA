@@ -26,3 +26,16 @@ class InjectorTest(unittest.TestCase):
             if not allSame:
                 break
         self.assertFalse(allSame)
+
+    def test_ChangedModelIsReturned(self):
+        injector = Injector(self._model, 1.0)
+        weightsOrig = self._model.get_weights()
+        changedModel = injector.injectError()
+        weightsChanged = changedModel.get_weights()
+
+        allSame = True
+        for orig, new in zip(weightsOrig, weightsChanged):
+            allSame = np.allclose(orig, new)
+            if not allSame:
+                break
+        self.assertFalse(allSame)

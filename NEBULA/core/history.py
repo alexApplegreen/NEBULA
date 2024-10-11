@@ -15,6 +15,13 @@ from keras import Model
 
 
 class History(deque):
+    """Subclass of the deque class
+    acts like a stack for Model instances.
+    Interface is as you would expect:
+        push - add element to top of stack
+        pop - get and remove from top of stack
+        peek - get element from top without removing it
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -23,6 +30,9 @@ class History(deque):
         self.append(entry)
 
     def revert(self) -> None:
+        """ Revert last change made to history
+        Removes the element from top of the stack
+        """
         try:
             super().pop()
         except IndexError:
