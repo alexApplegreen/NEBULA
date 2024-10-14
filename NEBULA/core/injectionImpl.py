@@ -51,14 +51,14 @@ class InjectionImpl:
         return results.get()
 
     @staticmethod
-    def _concurrentErrorInjection(layer, layerMem, probability):
+    def _concurrentErrorInjection(layername: str, layerMem: dict, probability: float):
         """Routine which is executed by the subprocesses
         The weights from the model's layer are read from shared memory
         and modified with a given probability and
         returns the modified weights.
         """
         InjectionImpl._logger.info(
-            f"started worker process {get_ident()} on layer {layer} with BER of {probability}"
+            f"started worker process {get_ident()} on layer {layername} with BER of {probability}"
         )
 
         weights = []
@@ -83,13 +83,14 @@ class InjectionImpl:
                     newWeights.append(newWeight)
                 else:
                     newWeights.append(weight)
-            return layer, newWeights
+            return layername, newWeights
 
         except KeyError as e:
-            # Shared Memory is not accessible
-            InjectionImpl._logger.error(f"Cannot access argument {e.args[0]} of shared memory layer {layer}")
-            return None
+            # Shared Memory is not accessible, return unmodified weights
+            InjectionImpl._logger.error(f"Cannot access argument {e.args[0]} of shared memory layer {layername}")
+            return layername, weights
 
+    # TODO refactor this
     @staticmethod
     def _flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
         """Helper function which flips bits in a given memory range with a given probability
