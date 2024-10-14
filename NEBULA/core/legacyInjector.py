@@ -28,7 +28,9 @@ class LegacyInjector(BaseInjector):
         self._check = check
 
     def injectError(self, model: Model) -> None:
-        """calls the og implementation and appends the new changed model to the history"""
+        """calls the og implementation
+        This method edits the model inplace.
+        """
         self._logger.debug(f"Injecting error with probability of {self._probability}")
-        # create deep copy of model to not edit it in place
+        # edit model in place
         flip_random_bits_in_model_weights(model, self._probability, self._check)

@@ -14,15 +14,14 @@ from logging import Logger
 from multiprocessing import shared_memory
 
 import numpy as np
-
-from keras import Model
+from keras import Model, Layer
 
 from NEBULA.core.BaseInjector import BaseInjector
 from NEBULA.core.injectionImpl import InjectionImpl
 from NEBULA.utils.logging import getLogger
 
 
-def _initialize_shared_weights(layers: dict) -> dict:
+def _initialize_shared_weights(layers: list[Layer]) -> dict:
     """Initialize shared memory for each layer's weights."""
     shared_weights = {}
     for layer in layers:
@@ -40,7 +39,7 @@ def _initialize_shared_weights(layers: dict) -> dict:
     return shared_weights
 
 
-def _create_process_pool(layers: dict) -> mp.Pool:
+def _create_process_pool(layers: list[Layer]) -> mp.Pool:
     """Create a process pool with one process per layer."""
     num_processes = len(layers)
     return mp.Pool(num_processes)
@@ -60,7 +59,7 @@ class Injector(BaseInjector):
     _process_pool: mp.Pool = None
     _sharedWeights: dict
 
-    def __init__(self, layers: dict, probability: float = 0.01) -> None:
+    def __init__(self, layers: list[Layer], probability: float = 0.01) -> None:
         super().__init__(layers, probability)
         self._logger = getLogger(__name__)
 
@@ -79,10 +78,9 @@ class Injector(BaseInjector):
 
     def injectError(self, model: Model) -> None:
         """ Method to inject errors into the model
-        Creates a deep copy of the model and passes it to the
-        injection implementation, which uses the processes from the pool
-        to modify the model.
-        Also adds the resulting model to the history
+        This method edits the model in place!
+        Uses one process per layer of the given model and injects biterrors into the model
+        with a Bit Error Rate of the given probability.
         """
         self._logger.debug(f"Injecting error with probability of {self._probability}")
 
