@@ -12,6 +12,7 @@ __copyright__   = "Copyright 2024, Planet Earth"
 from abc import ABC, abstractmethod
 
 
+# TODO add history functions back in using layers instead of models
 class BaseInjector(ABC):
     """Abstract base class for all injectors
     Injectors can be configured using the setter methods
