@@ -31,7 +31,6 @@ class InjectionImpl:
 
     _logger = getLogger(__name__)
 
-    # TODO
     @staticmethod
     def injectToWeights(model: Model, probability: float, processPool: mp.Pool) -> Model:
         """Modify weights of model using multiprocessing.
