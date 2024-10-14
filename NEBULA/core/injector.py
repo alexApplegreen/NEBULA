@@ -15,6 +15,8 @@ from multiprocessing import shared_memory
 
 import numpy as np
 
+from keras import Model
+
 from NEBULA.core.BaseInjector import BaseInjector
 from NEBULA.core.injectionImpl import InjectionImpl
 from NEBULA.utils.logging import getLogger
@@ -25,15 +27,15 @@ def _initialize_shared_weights(layers: dict) -> dict:
     shared_weights = {}
     for layer in layers:
         layer_name = layer.name
-        shared_weights[layer_name] = {"weights": [], "membuf": []}
+        shared_weights[layer_name] = {"membuf": [], "shapes": []}
 
         for weight in layer.get_weights():
             shared_mem = shared_memory.SharedMemory(create=True, size=weight.nbytes)
             shared_weight = np.ndarray(weight.shape, dtype=weight.dtype, buffer=shared_mem.buf)
             np.copyto(shared_weight, weight)
 
-            shared_weights[layer_name]["weights"].append(shared_weight)
             shared_weights[layer_name]["membuf"].append(shared_mem)
+            shared_weights[layer_name]["shapes"].append(weight.shape)
 
     return shared_weights
 
@@ -55,7 +57,7 @@ class Injector(BaseInjector):
     """
 
     _logger: Logger
-    _process_pool: mp.Pool
+    _process_pool: mp.Pool = None
     _sharedWeights: dict
 
     def __init__(self, layers: dict, probability: float = 0.01) -> None:
@@ -70,11 +72,14 @@ class Injector(BaseInjector):
         self._logger.debug("Closing Process Pool and deleting shared memory")
         if self._process_pool is not None:
             self._process_pool.terminate()
-        for mem in self._sharedWeights:
-            mem["membuf"].close()
-            mem["membuf"].unlink()
+        for layer in self._sharedWeights:
+            for i in range(len(self._sharedWeights[layer]["membuf"])):
+                self._sharedWeights[layer]["membuf"][i].close()
+                self._sharedWeights[layer]["membuf"][i].unlink()
 
-    def injectError(self, model) -> None:
+
+
+    def injectError(self, model: Model) -> None:
         """ Method to inject errors into the model
         Creates a deep copy of the model and passes it to the
         injection implementation, which uses the processes from the pool
@@ -84,7 +89,5 @@ class Injector(BaseInjector):
         self._logger.debug(f"Injecting error with probability of {self._probability}")
 
         # inject error
-        InjectionImpl.injectToWeights(self._layers, self._probability, self._process_pool)
-        # self._history.push(modelCopy)
-        # self._model = modelCopy
-        self._reconstructModel(model)
+        results = InjectionImpl.injectToWeights(self._sharedWeights, self._probability, self._process_pool)
+        self._reconstructModel(model, results)

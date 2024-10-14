@@ -18,18 +18,18 @@ class LegacyInjectorTest(unittest.TestCase):
             self._model = keras.Model(inputs=inputs, outputs=outputs)
 
     def test_injectErrorWith0ProbabilityDoesNotChangeModel(self):
-        li = LegacyInjector(self._model, probability=0.0)
-        weightsOld = li.model.get_weights()
-        li.injectError()
-        weightsNew = li.model.get_weights()
+        li = LegacyInjector(self._model.layers, probability=0.0)
+        weightsOld = self._model.get_weights()
+        li.injectError(self._model)
+        weightsNew = self._model.get_weights()
         for orig, new in zip(weightsNew, weightsOld):
             self.assertTrue(np.allclose(orig, new))
 
     def test_injectErrorDoesChangeModel(self):
-        li = LegacyInjector(self._model, probability=1.0)
-        weightsOld = li.model.get_weights()
-        modelAltered = li.injectError()
-        weightsNew = modelAltered.get_weights()
+        li = LegacyInjector(self._model.layers, probability=1.0)
+        weightsOld = self._model.get_weights()
+        li.injectError(self._model)
+        weightsNew = self._model.get_weights()
         allSame = True
         for orig, new in zip(weightsOld, weightsNew):
             allSame = np.allclose(orig, new)
@@ -37,27 +37,3 @@ class LegacyInjectorTest(unittest.TestCase):
                 break
 
         self.assertFalse(allSame)
-
-    def test_changeIsReversibleWithActualModel(self):
-        li = LegacyInjector(self._model, probability=1.0)
-        origWeights = self._model.get_weights()
-        _ = li.injectError()
-
-        undoneModel = li.undo()
-        undoneWeights = undoneModel.get_weights()
-
-        for orig, new in zip(origWeights, undoneWeights):
-            self.assertTrue(np.allclose(orig, new))
-
-    def test_undoCanCascade(self):
-        li = LegacyInjector(self._model, probability=1.0)
-        origWeights = li.model.get_weights()
-        li.injectError()
-        li.undo()
-        li.injectError()
-        li.undo()
-
-        undoneWeights = li.model.get_weights()
-
-        for orig, new in zip(origWeights, undoneWeights):
-            self.assertTrue(np.allclose(orig, new))

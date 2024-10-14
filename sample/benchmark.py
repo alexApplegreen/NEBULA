@@ -10,15 +10,15 @@ if __name__ == '__main__':
     outputs = keras.layers.Dense(5, activation="softmax")(x)
     model = keras.Model(inputs=inputs, outputs=outputs)
 
-    legacyInjector = LegacyInjector(model, probability=1.0)
-    injector = Injector(model, probability=1.0)
+    legacyInjector = LegacyInjector(model.layers, probability=1.0)
+    injector = Injector(model.layers, probability=1.0)
 
     startOld = time.time()
-    legacyInjector.injectError()
+    legacyInjector.injectError(model)
     endOld = time.time()
 
     startNew = time.time()
-    injector.injectError()
+    injector.injectError(model)
     endNew = time.time()
 
     durationOld = endOld - startOld
