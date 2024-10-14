@@ -65,12 +65,10 @@ class InjectionImpl:
         mems = []
 
         try:
-            for i in range(len(layerMem["membuf"])):
-                shm = shared_memory.SharedMemory(layerMem["membuf"][i].name)
-                mems.append(shm)  # keep reference to shared mem otherwise it will be GC'ed
-                shape = layerMem["shapes"][i]
-                data = np.ndarray(shape, dtype=np.float32, buffer=shm.buf)
-                weights.append(data)
+            for shm, shape in zip(layerMem["membuf"], layerMem["shapes"]):
+                shm = shared_memory.SharedMemory(name=shm.name)
+                mems.append(shm)  # Keep reference to avoid garbage collection
+                weights.append(np.ndarray(shape, dtype=np.float32, buffer=shm.buf))
 
             newWeights = []
             for weight in weights:
