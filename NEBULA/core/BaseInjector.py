@@ -21,40 +21,47 @@ class BaseInjector(ABC):
     Injectors can be configured using the setter methods
     """
 
-    _model = None
+    _layers = None
     _probability = 0.01
-    _history = None
+    _history: History
 
     def __init__(
             self,
-            model,
+            layers,
             probability=_probability,
     ):
-        self._model = model
+        self._layers = layers
         self._probability = probability
         self._history = History()
-        self._history.push(model)
+        self._history.push(layers)
 
     @abstractmethod
-    def injectError(self) -> Model:
+    def injectError(self, model, probability=_probability) -> None:
+        """Inject Errors into network
+        Every subclass of the BaseInjector must implement this method
+        """
         pass
+
+    def _reconstructModel(self, model):
+        for layer in self._layers:
+            model.get_layer(name=layer.name).set_weights(self._layers[layer])
 
     def undo(self) -> Model:
         self._history.revert()
-        self._model = self._history.peek()
-        return self._model
+        self._layers = self._history.peek()
+        return self._layers
 
     @property
-    def model(self):
-        return self._model
+    def layers(self):
+        return self._layers
 
     @property
     def probability(self):
         return self._probability
 
-    @model.setter
-    def model(self, model):
-        self._model = model
+    @layers.setter
+    def layers(self, model):
+        self._layers = model
 
     @probability.setter
     def probability(self, probability):

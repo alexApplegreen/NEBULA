@@ -14,7 +14,6 @@ from threading import get_ident
 
 import numpy as np
 import tensorflow as tf
-from keras.src.models import Model
 
 from NEBULA.utils.logging import getLogger
 
@@ -32,28 +31,23 @@ class InjectionImpl:
     _logger = getLogger(__name__)
 
     @staticmethod
-    def injectToWeights(model: Model, probability: float, processPool: mp.Pool) -> Model:
+    def injectToWeights(layers: dict, probability: float, processPool: mp.Pool) -> None:
         """Modify weights of model using multiprocessing.
         Tensorflow locks GIL which blocks all threads which are not tensorflow
         control flow. Processes can still run.
+        Since python parameters are passed as object references, the dictionary is
+        modified in place.
         """
         # Apply the error injection function to each layer in parallel
-        results = processPool.starmap_async(
+        _ = processPool.starmap_async(
             InjectionImpl._concurrentErrorInjection,
-            [(layer, probability) for layer in model.layers]
+            [(layer, probability) for layer in layers]
         )
 
         # TODO are these necessary? starmap should block until processes return
         processPool.close()
         processPool.join()
 
-        # summarize results from processes
-        for result in results.get():
-            layer_name, modified_weights = result
-            layer = model.get_layer(name=layer_name)
-            layer.set_weights(modified_weights)
-
-        return model
 
     @staticmethod
     def _concurrentErrorInjection(layer, probability):

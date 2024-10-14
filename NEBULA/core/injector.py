@@ -9,17 +9,40 @@ __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
-from tensorflow.keras import Model
-from keras.src.models.cloning import clone_model
+import multiprocessing as mp
+from logging import Logger
+from multiprocessing import shared_memory
+
+import numpy as np
 
 from NEBULA.core.BaseInjector import BaseInjector
 from NEBULA.core.injectionImpl import InjectionImpl
 from NEBULA.utils.logging import getLogger
 
-import multiprocessing as mp
+
+def _initialize_shared_weights(layers: dict) -> dict:
+    """Initialize shared memory for each layer's weights."""
+    shared_weights = {}
+    for layer in layers:
+        layer_name = layer.name
+        shared_weights[layer_name] = {"weights": [], "membuf": []}
+
+        for weight in layer.get_weights():
+            shared_mem = shared_memory.SharedMemory(create=True, size=weight.nbytes)
+            shared_weight = np.ndarray(weight.shape, dtype=weight.dtype, buffer=shared_mem.buf)
+            np.copyto(shared_weight, weight)
+
+            shared_weights[layer_name]["weights"].append(shared_weight)
+            shared_weights[layer_name]["membuf"].append(shared_mem)
+
+    return shared_weights
 
 
-# TODO use reference to weights instead modifying the whole model
+def _create_process_pool(layers: dict) -> mp.Pool:
+    """Create a process pool with one process per layer."""
+    num_processes = len(layers)
+    return mp.Pool(num_processes)
+
 
 class Injector(BaseInjector):
     """Class Injector:
@@ -31,18 +54,27 @@ class Injector(BaseInjector):
     error injection
     """
 
-    _logger = None
-    _process_pool = None
+    _logger: Logger
+    _process_pool: mp.Pool
+    _sharedWeights: dict
 
-    def __init__(self, model: Model, probability: float = 0.01) -> None:
-        super().__init__(model, probability)
+    def __init__(self, layers: dict, probability: float = 0.01) -> None:
+        super().__init__(layers, probability)
         self._logger = getLogger(__name__)
-        self._process_pool = mp.Pool(len(model.layers))
+
+        if mp.current_process().name == 'MainProcess':
+            self._sharedWeights = _initialize_shared_weights(layers)
+            self._process_pool = _create_process_pool(layers)
 
     def __del__(self):
-        self._process_pool.terminate()
+        self._logger.debug("Closing Process Pool and deleting shared memory")
+        if self._process_pool is not None:
+            self._process_pool.terminate()
+        for mem in self._sharedWeights:
+            mem["membuf"].close()
+            mem["membuf"].unlink()
 
-    def injectError(self) -> Model:
+    def injectError(self, model) -> None:
         """ Method to inject errors into the model
         Creates a deep copy of the model and passes it to the
         injection implementation, which uses the processes from the pool
@@ -50,12 +82,9 @@ class Injector(BaseInjector):
         Also adds the resulting model to the history
         """
         self._logger.debug(f"Injecting error with probability of {self._probability}")
-        # create deep copy
-        modelCopy = clone_model(self._model)
-        modelCopy.set_weights(self._model.get_weights())
 
         # inject error
-        modelCopy = InjectionImpl.injectToWeights(modelCopy, self._probability, self._process_pool)
-        self._history.push(modelCopy)
-        self._model = modelCopy
-        return self._model
+        InjectionImpl.injectToWeights(self._layers, self._probability, self._process_pool)
+        # self._history.push(modelCopy)
+        # self._model = modelCopy
+        self._reconstructModel(model)

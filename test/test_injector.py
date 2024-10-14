@@ -1,7 +1,10 @@
 import unittest
-import keras
+
 import numpy as np
+
 from NEBULA.core.injector import Injector
+from utils import ModelUtils
+
 
 class InjectorTest(unittest.TestCase):
 
@@ -9,32 +12,16 @@ class InjectorTest(unittest.TestCase):
 
     def setUp(self):
         if self._model is None:
-            inputs = keras.Input(shape=(37,))
-            x = keras.layers.Dense(32, activation="relu")(inputs)
-            outputs = keras.layers.Dense(5, activation="softmax")(x)
-            self._model = keras.Model(inputs=inputs, outputs=outputs)
+            self._model = ModelUtils.ModelUtils.getBasicModel()
 
     def test_injectorWithHundredProbChangesModel(self):
-        injector = Injector(self._model, 1.0)
-        weightsOrig = injector.model.get_weights()
-        _ = injector.injectError()
-        weightsNew = injector.model.get_weights()
+        weightsOrig = self._model.get_weights()
+        injector = Injector(self._model.layers, 1.0)
+        injector.injectError(self._model)
+        weightsNew = self._model.get_weights()
 
         allSame = True
         for orig, new in zip(weightsOrig, weightsNew):
-            allSame = np.allclose(orig, new)
-            if not allSame:
-                break
-        self.assertFalse(allSame)
-
-    def test_ChangedModelIsReturned(self):
-        injector = Injector(self._model, 1.0)
-        weightsOrig = self._model.get_weights()
-        changedModel = injector.injectError()
-        weightsChanged = changedModel.get_weights()
-
-        allSame = True
-        for orig, new in zip(weightsOrig, weightsChanged):
             allSame = np.allclose(orig, new)
             if not allSame:
                 break

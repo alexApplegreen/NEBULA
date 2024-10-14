@@ -32,8 +32,8 @@ class LegacyInjector(BaseInjector):
         """calls the og implementation and appends the new changed model to the history"""
         self._logger.debug(f"Injecting error with probability of {self._probability}")
         # create deep copy of model to not edit it in place
-        modelCopy = clone_model(self._model)
-        modelCopy.set_weights(self._model.get_weights())
+        modelCopy = clone_model(self._layers)
+        modelCopy.set_weights(self._layers.get_weights())
         modelCopy = flip_random_bits_in_model_weights(modelCopy, self._probability, self._check)
         self._history.push(modelCopy)
         return modelCopy
