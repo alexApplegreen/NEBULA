@@ -77,8 +77,6 @@ class Injector(BaseInjector):
                 self._sharedWeights[layer]["membuf"][i].close()
                 self._sharedWeights[layer]["membuf"][i].unlink()
 
-
-
     def injectError(self, model: Model) -> None:
         """ Method to inject errors into the model
         Creates a deep copy of the model and passes it to the

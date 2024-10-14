@@ -50,8 +50,6 @@ class InjectionImpl:
 
         return results.get()
 
-
-
     @staticmethod
     def _concurrentErrorInjection(layer, layerMem, probability):
         """Routine which is executed by the subprocesses
@@ -69,7 +67,7 @@ class InjectionImpl:
         try:
             for i in range(len(layerMem["membuf"])):
                 shm = shared_memory.SharedMemory(layerMem["membuf"][i].name)
-                mems.append(shm) # keep reference to shared mem otherwise it will be GC'ed
+                mems.append(shm)  # keep reference to shared mem otherwise it will be GC'ed
                 shape = layerMem["shapes"][i]
                 data = np.ndarray(shape, dtype=np.float32, buffer=shm.buf)
                 weights.append(data)

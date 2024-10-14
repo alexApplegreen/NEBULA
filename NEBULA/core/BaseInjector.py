@@ -11,10 +11,6 @@ __copyright__   = "Copyright 2024, Planet Earth"
 
 from abc import ABC, abstractmethod
 
-from keras import Model, Layer
-
-from NEBULA.core.history import History
-
 
 class BaseInjector(ABC):
     """Abstract base class for all injectors
