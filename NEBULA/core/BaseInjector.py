@@ -11,50 +11,48 @@ __copyright__   = "Copyright 2024, Planet Earth"
 
 from abc import ABC, abstractmethod
 
-from keras import Model
 
-from NEBULA.core.history import History
-
-
+# TODO add history functions back in using layers instead of models
 class BaseInjector(ABC):
     """Abstract base class for all injectors
     Injectors can be configured using the setter methods
     """
 
-    _model = None
+    _layers = None
     _probability = 0.01
-    _history = None
 
     def __init__(
             self,
-            model,
+            layers,
             probability=_probability,
     ):
-        self._model = model
+        self._layers = layers
         self._probability = probability
-        self._history = History()
-        self._history.push(model)
 
     @abstractmethod
-    def injectError(self) -> Model:
+    def injectError(self, model) -> None:
+        """Inject Errors into network
+        Every subclass of the BaseInjector must implement this method
+        """
         pass
 
-    def undo(self) -> Model:
-        self._history.revert()
-        self._model = self._history.peek()
-        return self._model
+    @staticmethod
+    def _reconstructModel(model, result: dict) -> None:
+        for item in result:
+            if len(item[1]) > 0:
+                model.get_layer(name=item[0]).set_weights(item[1])
 
     @property
-    def model(self):
-        return self._model
+    def layers(self):
+        return self._layers
 
     @property
     def probability(self):
         return self._probability
 
-    @model.setter
-    def model(self, model):
-        self._model = model
+    @layers.setter
+    def layers(self, model):
+        self._layers = model
 
     @probability.setter
     def probability(self, probability):

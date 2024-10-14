@@ -1,13 +1,8 @@
-import tensorflow as tf
+import numpy as np
+from PIL import Image
 from keras.datasets import mnist
-from keras.src.models.cloning import clone_model
 from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import to_categorical
-
-from PIL import Image
-from skimage import transform
-
-import numpy as np
 
 from NEBULA.core.injector import Injector
 
@@ -27,8 +22,8 @@ if __name__ == '__main__':
     model = load_model('sampledata/mnist_model.h5', compile=False)
     weightsBefore = model.get_weights()
 
-    injector = Injector(model, probability=0.0001)
-    model = injector.injectError()
+    injector = Injector(model.layers, probability=0.00005)
+    injector.injectError(model)
     weightsAfter = model.get_weights()
 
     # Preprocess the image data

@@ -10,11 +10,11 @@ __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
 import multiprocessing as mp
+from multiprocessing import shared_memory
 from threading import get_ident
 
 import numpy as np
 import tensorflow as tf
-from keras.src.models import Model
 
 from NEBULA.utils.logging import getLogger
 
@@ -31,53 +31,64 @@ class InjectionImpl:
 
     _logger = getLogger(__name__)
 
-    # TODO
     @staticmethod
-    def injectToWeights(model: Model, probability: float, processPool: mp.Pool) -> Model:
+    def injectToWeights(sharedMem: dict, probability: float, processPool: mp.Pool) -> dict:
         """Modify weights of model using multiprocessing.
         Tensorflow locks GIL which blocks all threads which are not tensorflow
         control flow. Processes can still run.
+        Since python parameters are passed as object references, the dictionary is
+        modified in place.
         """
         # Apply the error injection function to each layer in parallel
         results = processPool.starmap_async(
             InjectionImpl._concurrentErrorInjection,
-            [(layer, probability) for layer in model.layers]
+            [(layer, sharedMem[layer], probability) for layer in sharedMem.keys()]
         )
 
-        # TODO are these necessary? starmap should block until processes return
         processPool.close()
         processPool.join()
 
-        # summarize results from processes
-        for result in results.get():
-            layer_name, modified_weights = result
-            layer = model.get_layer(name=layer_name)
-            layer.set_weights(modified_weights)
-
-        return model
+        return results.get()
 
     @staticmethod
-    def _concurrentErrorInjection(layer, probability):
+    def _concurrentErrorInjection(layer, layerMem, probability):
         """Routine which is executed by the subprocesses
-        this function modifies the layer's weights with a given probability and
+        The weights from the model's layer are read from shared memory
+        and modified with a given probability and
         returns the modified weights.
         """
         InjectionImpl._logger.info(
-            f"started worker process {get_ident()} on layer {layer.name} with BER of {probability}"
+            f"started worker process {get_ident()} on layer {layer} with BER of {probability}"
         )
 
-        newWeights = []
-        for weight in layer.get_weights():
-            if weight.dtype == np.float32:
+        weights = []
+        mems = []
+
+        try:
+            for i in range(len(layerMem["membuf"])):
+                shm = shared_memory.SharedMemory(layerMem["membuf"][i].name)
+                mems.append(shm)  # keep reference to shared mem otherwise it will be GC'ed
+                shape = layerMem["shapes"][i]
+                data = np.ndarray(shape, dtype=np.float32, buffer=shm.buf)
+                weights.append(data)
+
+            newWeights = []
+            for weight in weights:
                 shape = weight.shape
-                flattenedWeights = weight.flatten()
-                for i in range(len(flattenedWeights)):
-                    flattenedWeights[i] = InjectionImpl._flipFloat(flattenedWeights[i], probability=probability)
-                newWeight = flattenedWeights.reshape(shape)
-                newWeights.append(newWeight)
-            else:
-                newWeights.append(weight)
-        return layer.name, newWeights
+                if weight.dtype == np.float32:
+                    flattenedWeights = weight.flatten()
+                    for i in range(len(flattenedWeights)):
+                        flattenedWeights[i] = InjectionImpl._flipFloat(flattenedWeights[i], probability=probability)
+                    newWeight = flattenedWeights.reshape(shape)
+                    newWeights.append(newWeight)
+                else:
+                    newWeights.append(weight)
+            return layer, newWeights
+
+        except KeyError as e:
+            # Shared Memory is not accessible
+            InjectionImpl._logger.error(f"Cannot access argument {e.args[0]} of shared memory layer {layer}")
+            return None
 
     @staticmethod
     def _flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
