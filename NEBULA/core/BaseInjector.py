@@ -11,6 +11,8 @@ __copyright__   = "Copyright 2024, Planet Earth"
 
 from abc import ABC, abstractmethod
 
+from NEBULA.core.history import History
+
 
 # TODO add history functions back in using layers instead of models
 class BaseInjector(ABC):
@@ -20,6 +22,7 @@ class BaseInjector(ABC):
 
     _layers = None
     _probability = 0.01
+    _history: History
 
     def __init__(
             self,
@@ -28,6 +31,7 @@ class BaseInjector(ABC):
     ):
         self._layers = layers
         self._probability = probability
+        self._history = History(self._layers)
 
     @abstractmethod
     def injectError(self, model) -> None:
