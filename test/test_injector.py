@@ -33,6 +33,7 @@ class InjectorTest(unittest.TestCase):
         self.assertFalse(allSame)
 
     def test_reconstructModelWorks(self):
+        injector = Injector(self._model.layers)
         modelCopy = ModelUtils.ModelUtils.getBasicModel()
 
         # overwrite copy weights with zeros
@@ -53,7 +54,7 @@ class InjectorTest(unittest.TestCase):
 
         # self._logger.debug(layers)
 
-        Injector._reconstructModel(modelCopy, layers)
+        injector._reconstructModel(modelCopy, layers)
 
         for orig, new in zip(self._model.get_weights(), modelCopy.get_weights()):
             self.assertTrue(np.allclose(orig, new))

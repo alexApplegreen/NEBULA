@@ -87,3 +87,4 @@ class Injector(BaseInjector):
         # inject error
         results = InjectionImpl.injectToWeights(self._sharedWeights, self._probability, self._process_pool)
         self._reconstructModel(model, results)
+        self._history.push(model.layers)
