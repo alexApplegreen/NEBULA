@@ -10,6 +10,7 @@ __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
 import multiprocessing as mp
+import copy
 from logging import Logger
 from multiprocessing import shared_memory
 
@@ -70,6 +71,7 @@ class Injector(BaseInjector):
     def __del__(self):
         self._logger.debug("Closing Process Pool and deleting shared memory")
         if self._process_pool is not None:
+            self._process_pool.close()
             self._process_pool.terminate()
         for layer in self._sharedWeights:
             for i in range(len(self._sharedWeights[layer]["membuf"])):
@@ -87,4 +89,11 @@ class Injector(BaseInjector):
         # inject error
         results = InjectionImpl.injectToWeights(self._sharedWeights, self._probability, self._process_pool)
         self._reconstructModel(model, results)
-        self._history.push(model.layers)
+        layersCopy = copy.copy(model.layers)
+        self._history.push(layersCopy)
+
+    def undo(self, model: Model) -> None:
+        try:
+            super().undo(model)
+        except AttributeError:
+            self._logger.error("could not set layer data by name")

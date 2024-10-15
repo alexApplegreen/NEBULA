@@ -9,6 +9,7 @@ __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
+import copy
 from collections import deque
 
 from keras import Layer, Model
@@ -26,10 +27,12 @@ class History(deque):
     def __init__(self, layers: list[Layer]=[]) -> None:
         super().__init__()
         if layers is not []:
-            self.push(layers)
+            layerCopy = copy.copy(layers)
+            self.push(layerCopy)
 
     def push(self, entry: list[Layer]) -> None:
-        self.append(entry)
+        layerCopy = copy.copy(entry)
+        self.append(layerCopy)
 
     def revert(self) -> None:
         """ Revert last change made to history

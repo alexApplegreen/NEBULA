@@ -21,7 +21,7 @@ class InjectorTest(unittest.TestCase):
 
     def test_injectorWithHundredProbChangesModel(self):
         weightsOrig = self._model.get_weights()
-        injector = Injector(self._model.layers, 1.0)
+        injector = Injector(self._model.layers, probability=1.0)
         injector.injectError(self._model)
         weightsNew = self._model.get_weights()
 
@@ -57,4 +57,37 @@ class InjectorTest(unittest.TestCase):
         injector._reconstructModel(modelCopy, layers)
 
         for orig, new in zip(self._model.get_weights(), modelCopy.get_weights()):
+            self.assertTrue(np.allclose(orig, new))
+
+    def test_processPoolCanExecuteMultipleTasks(self):
+        injector = Injector(self._model.layers, probability=0.000005)
+        try:
+            injector.injectError(self._model)
+            injector.injectError(self._model)
+        except ValueError:
+            # ValueError is thrown when task is queued before last injection is done
+            self.fail()
+
+
+    def test_changesAreReversible(self):
+        weightsOrig = self._model.get_weights()
+
+        #inject error
+        injector = Injector(self._model.layers, probability=1.0)
+        injector.injectError(self._model)
+
+        weightsChanged = self._model.get_weights()
+
+        allSame = True
+        for orig, new in zip(weightsOrig, weightsChanged):
+            allSame = np.allclose(orig, new)
+            if not allSame:
+                break
+        self.assertFalse(allSame)
+
+        injector.undo(self._model)
+
+        weightsUndone = self._model.get_weights()
+
+        for orig, new in zip(weightsOrig, weightsUndone):
             self.assertTrue(np.allclose(orig, new))

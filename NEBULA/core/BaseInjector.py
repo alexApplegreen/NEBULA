@@ -11,7 +11,7 @@ __copyright__   = "Copyright 2024, Planet Earth"
 
 from abc import ABC, abstractmethod
 
-from keras.src.models.variable_mapping import Layer
+from keras import Layer, Model
 
 from NEBULA.core.history import History
 
@@ -41,6 +41,17 @@ class BaseInjector(ABC):
         Every subclass of the BaseInjector must implement this method
         """
         pass
+
+    def undo(self, model: Model) -> None:
+        """resets the last changes made to the model by the injector
+        this will modify the model given by the param model and does not return anything.
+        Will raise an AttributeError if the history's layers cannot be written back into the specified model
+        """
+        self._history.revert()
+        layers = self._history.peek()
+        for layer in layers:
+            model.get_layer(name=layer.name).set_weights(layer.get_weights())
+
 
     def _reconstructModel(self, model, result: dict) -> None:
         for item in result:
