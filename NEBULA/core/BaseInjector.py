@@ -11,7 +11,7 @@ __copyright__   = "Copyright 2024, Planet Earth"
 
 from abc import ABC, abstractmethod
 
-from keras import Layer, Model
+from keras import Layer
 
 from NEBULA.core.history import History
 
@@ -51,7 +51,6 @@ class BaseInjector(ABC):
         layers = self._history.peek()
         for layer in layers:
             model.get_layer(name=layer.name).set_weights(layer.get_weights())
-
 
     def _reconstructModel(self, model, result: dict) -> None:
         for item in result:

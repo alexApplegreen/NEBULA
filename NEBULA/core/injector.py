@@ -10,7 +10,6 @@ __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
 import multiprocessing as mp
-import copy
 from logging import Logger
 from multiprocessing import shared_memory
 

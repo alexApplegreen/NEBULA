@@ -12,7 +12,7 @@ __copyright__   = "Copyright 2024, Planet Earth"
 import copy
 from collections import deque
 
-from keras import Layer, Model
+from keras import Layer
 
 
 class History(deque):
@@ -24,7 +24,7 @@ class History(deque):
         peek - get element from top without removing it
     """
 
-    def __init__(self, layers: list[Layer]=[]) -> None:
+    def __init__(self, layers: list[Layer] = []) -> None:
         super().__init__()
         if layers is not []:
             layerCopy = copy.deepcopy(layers)
