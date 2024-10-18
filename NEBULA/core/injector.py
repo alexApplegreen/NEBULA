@@ -93,5 +93,5 @@ class Injector(BaseInjector):
     def undo(self, model: Model) -> None:
         try:
             super().undo(model)
-        except AttributeError:
-            self._logger.error("could not set layer data by name")
+        except ValueError:
+            raise(ValueError("You probably meant to pass in a different model"))

@@ -11,12 +11,11 @@ __copyright__   = "Copyright 2024, Planet Earth"
 
 from abc import ABC, abstractmethod
 
-from keras import Layer
+from keras import Model
 
 from NEBULA.core.history import History
 
 
-# TODO add history functions back in using layers instead of models
 class BaseInjector(ABC):
     """Abstract base class for all injectors
     Injectors can be configured using the setter methods
@@ -45,7 +44,7 @@ class BaseInjector(ABC):
     def undo(self, model: Model) -> None:
         """resets the last changes made to the model by the injector
         this will modify the model given by the param model and does not return anything.
-        Will raise an AttributeError if the history's layers cannot be written back into the specified model
+        Will raise an ValueError if the history's layers cannot be written back into the specified model
         """
         self._history.revert()
         layers = self._history.peek()

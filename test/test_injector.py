@@ -91,3 +91,15 @@ class InjectorTest(unittest.TestCase):
 
         for orig, new in zip(weightsOrig, weightsUndone):
             self.assertTrue(np.allclose(orig, new))
+
+    def test_undoOnEmptyHistoryShouldRaiseIndexError(self):
+        with self.assertRaises(IndexError):
+            injector = Injector(self._model.layers)
+            injector.undo(self._model)
+
+    def test_undoOnWrongModelShouldRaiseAttributeError(self):
+        with self.assertRaises(ValueError):
+            injector = Injector(self._model.layers, probability=.0)
+            otherModel = ModelUtils.ModelUtils.getBasicModel()
+            injector.injectError(self._model)
+            injector.undo(otherModel)
