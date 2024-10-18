@@ -89,8 +89,7 @@ class Injector(BaseInjector):
         # inject error
         results = InjectionImpl.injectToWeights(self._sharedWeights, self._probability, self._process_pool)
         self._reconstructModel(model, results)
-        layersCopy = copy.copy(model.layers)
-        self._history.push(layersCopy)
+        self._history.push(model.layers)
 
     def undo(self, model: Model) -> None:
         try:

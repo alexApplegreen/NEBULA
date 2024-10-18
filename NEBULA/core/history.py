@@ -27,11 +27,11 @@ class History(deque):
     def __init__(self, layers: list[Layer]=[]) -> None:
         super().__init__()
         if layers is not []:
-            layerCopy = copy.copy(layers)
+            layerCopy = copy.deepcopy(layers)
             self.push(layerCopy)
 
     def push(self, entry: list[Layer]) -> None:
-        layerCopy = copy.copy(entry)
+        layerCopy = copy.deepcopy(entry)
         self.append(layerCopy)
 
     def revert(self) -> None:
