@@ -1,3 +1,14 @@
+#!/usr/bin/env python3
+
+"""
+NoiseLayer.py
+    Class to mimic noise during training
+"""
+
+__author__      = "Alexander Tepe"
+__email__       = "alexander.tepe@hotmail.de"
+__copyright__   = "Copyright 2024, Planet Earth"
+
 from logging import Logger
 from keras.src import Layer
 
@@ -9,6 +20,12 @@ from NEBULA.utils.logging import getLogger
 
 
 class NoiseLayer(Layer):
+    """subclass of keras layer simulating noise during training
+    This class is a subclass of keras.layers.layer
+    and can be used as such.
+    It can be added to any model and will take the shape of the previous layer
+    During training, the weights will add noise to the network during backpropagation
+    """
 
     _logger: Logger
     _probability: float
