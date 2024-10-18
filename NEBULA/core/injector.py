@@ -77,6 +77,7 @@ class Injector(BaseInjector):
                 self._sharedWeights[layer]["membuf"][i].close()
                 self._sharedWeights[layer]["membuf"][i].unlink()
 
+    # TODO update shared memory buffer with new weights
     def injectError(self, model: Model) -> None:
         """ Method to inject errors into the model
         This method edits the model in place!
@@ -89,6 +90,7 @@ class Injector(BaseInjector):
         results = InjectionImpl.injectToWeights(self._sharedWeights, self._probability, self._process_pool)
         self._reconstructModel(model, results)
         self._history.push(model.layers)
+        # self._sharedWeights = _initialize_shared_weights(model.layers)
 
     def undo(self, model: Model) -> None:
         try:
