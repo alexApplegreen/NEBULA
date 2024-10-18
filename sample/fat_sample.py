@@ -12,6 +12,6 @@ if __name__ == '__main__':
     model.summary()
 
     ti = TrainingInjector()
-    ti.attach(model)
+    newModel = ti.attach(model)
 
-    model.summary()
+    newModel.summary()

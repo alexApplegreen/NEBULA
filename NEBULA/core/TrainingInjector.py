@@ -12,6 +12,8 @@ __copyright__   = "Copyright 2024, Planet Earth"
 from logging import Logger
 from keras import Model, Layer
 
+import keras
+
 from NEBULA.utils.NoiseLayer import NoiseLayer
 from NEBULA.utils.logging import getLogger
 
@@ -28,9 +30,13 @@ class TrainingInjector:
     def __init__(self) -> None:
         self._logger = getLogger(__name__)
 
-    def attach(self, model: Model) -> None:
+    def attach(self, model: Model) -> Model:
         """Attach error injecting layer to existing untrained model
         This method will insert a layer into the given model to
         cause noise during backpropagation in the training of the model.
         """
         nl = NoiseLayer()(model.layers[-1].output)
+        return keras.Model(
+            inputs=model.inputs,
+            outputs=[nl]
+        )
