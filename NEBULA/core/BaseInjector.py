@@ -11,6 +11,10 @@ __copyright__   = "Copyright 2024, Planet Earth"
 
 from abc import ABC, abstractmethod
 
+from keras import Layer, Model
+
+from NEBULA.core.history import History
+
 
 # TODO add history functions back in using layers instead of models
 class BaseInjector(ABC):
@@ -20,6 +24,7 @@ class BaseInjector(ABC):
 
     _layers = None
     _probability = 0.01
+    _history: History
 
     def __init__(
             self,
@@ -28,6 +33,7 @@ class BaseInjector(ABC):
     ):
         self._layers = layers
         self._probability = probability
+        self._history = History(self._layers)
 
     @abstractmethod
     def injectError(self, model) -> None:
@@ -36,8 +42,18 @@ class BaseInjector(ABC):
         """
         pass
 
-    @staticmethod
-    def _reconstructModel(model, result: dict) -> None:
+    def undo(self, model: Model) -> None:
+        """resets the last changes made to the model by the injector
+        this will modify the model given by the param model and does not return anything.
+        Will raise an AttributeError if the history's layers cannot be written back into the specified model
+        """
+        self._history.revert()
+        layers = self._history.peek()
+        for layer in layers:
+            model.get_layer(name=layer.name).set_weights(layer.get_weights())
+
+
+    def _reconstructModel(self, model, result: dict) -> None:
         for item in result:
             if len(item[1]) > 0:
                 model.get_layer(name=item[0]).set_weights(item[1])

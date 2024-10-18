@@ -9,9 +9,10 @@ __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
+import copy
 from collections import deque
 
-from keras import Model
+from keras import Layer, Model
 
 
 class History(deque):
@@ -23,11 +24,15 @@ class History(deque):
         peek - get element from top without removing it
     """
 
-    def __init__(self) -> None:
+    def __init__(self, layers: list[Layer]=[]) -> None:
         super().__init__()
+        if layers is not []:
+            layerCopy = copy.deepcopy(layers)
+            self.push(layerCopy)
 
-    def push(self, entry: Model) -> None:
-        self.append(entry)
+    def push(self, entry: list[Layer]) -> None:
+        layerCopy = copy.deepcopy(entry)
+        self.append(layerCopy)
 
     def revert(self) -> None:
         """ Revert last change made to history
@@ -38,13 +43,13 @@ class History(deque):
         except IndexError:
             raise IndexError("pop from an empty history")
 
-    def pop(self) -> Model:
+    def pop(self) -> list[Layer]:
         try:
             return super().pop()
         except IndexError:
             raise IndexError("pop from an empty history")
 
-    def peek(self) -> Model:
+    def peek(self) -> list[Layer]:
         try:
             elem = super().pop()
             super().append(elem)

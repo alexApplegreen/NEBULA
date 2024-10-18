@@ -45,8 +45,7 @@ class InjectionImpl:
             [(layer, sharedMem[layer], probability) for layer in sharedMem.keys()]
         )
 
-        processPool.close()
-        processPool.join()
+        # processPool.join() <-- ätzendes Gift
 
         return results.get()
 
