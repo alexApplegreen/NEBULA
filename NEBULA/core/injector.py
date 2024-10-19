@@ -94,7 +94,7 @@ class Injector(BaseInjector):
         try:
             super().undo(model)
         except ValueError:
-            raise(ValueError("You probably meant to pass in a different model"))
+            raise (ValueError("You probably meant to pass in a different model"))
 
     def _deleteShareMem(self) -> None:
         """Helper function to securely delete shared memory

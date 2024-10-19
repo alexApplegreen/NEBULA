@@ -10,7 +10,6 @@ __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
 import multiprocessing as mp
-from multiprocessing import shared_memory
 from threading import get_ident
 
 import numpy as np

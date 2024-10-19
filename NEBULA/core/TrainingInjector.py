@@ -10,7 +10,7 @@ __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
 from logging import Logger
-from keras import Model, Layer
+from keras import Model
 
 import keras
 
