@@ -56,17 +56,15 @@ class InjectionImpl:
         and modified with a given probability and
         returns the modified weights.
         """
-        InjectionImpl._logger.info(
+        InjectionImpl._logger.debug(
             f"started worker process {get_ident()} on layer {layername} with BER of {probability}"
         )
 
         weights = []
-        mems = []
 
         try:
             for shm, shape in zip(layerMem["membuf"], layerMem["shapes"]):
-                shm = shared_memory.SharedMemory(name=shm.name)
-                mems.append(shm)  # Keep reference to avoid garbage collection
+                # TODO do not hardcode Float32!!!!
                 weights.append(np.ndarray(shape, dtype=np.float32, buffer=shm.buf))
 
             newWeights = []

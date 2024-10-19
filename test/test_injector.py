@@ -1,3 +1,4 @@
+import copy
 import unittest
 
 from keras import Model
@@ -103,3 +104,19 @@ class InjectorTest(unittest.TestCase):
             otherModel = ModelUtils.ModelUtils.getBasicModel()
             injector.injectError(self._model)
             injector.undo(otherModel)
+
+    def test_updatingAfterInjectionWorks(self):
+        injector = Injector(self._model.layers, probability=1.0)
+
+        for layer in self._model.layers:
+            data = injector._sharedWeights[layer.name]
+            for idx, weight in enumerate(layer.get_weights()):
+                weightFromBuffer = np.ndarray(
+                    data['shapes'][idx],
+                    dtype=np.float32,
+                    buffer=data['membuf'][idx].buf
+                )
+                if np.any(np.isnan(weight)):
+                    self.assertEqual(len(weight), len(weightFromBuffer))
+                else:
+                    self.assertTrue(np.allclose(weight, weightFromBuffer))
