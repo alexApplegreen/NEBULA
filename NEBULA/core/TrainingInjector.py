@@ -50,6 +50,9 @@ def _buildFunctionalModel(model: Model, noiseLayer: Layer, index: int) -> Model:
 class TrainingInjector:
     """Use to attach to untrained models
     This injector will simulate biterrors during the training phase
+    by adding a noiselayer to the given model.
+    This layer will produce noise during the learning phase of the network.
+    During inference the layer will pass all values from the n-1th layer through
     """
 
     _logger: Logger
@@ -59,6 +62,7 @@ class TrainingInjector:
         self._logger = getLogger(__name__)
 
     def attach(self, model: Model, index: int = 1) -> Model:
+        # TODO allow user to pass in Noiselayer instance or parameters for it
         """Attach error injecting layer to existing untrained model
         This method will insert a layer into the given model to
         cause noise during backpropagation in the training of the model.
