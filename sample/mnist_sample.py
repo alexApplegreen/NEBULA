@@ -4,7 +4,7 @@ from keras.datasets import mnist
 from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import to_categorical
 
-from NEBULA.core.injector import Injector
+from NEBULA import Injector
 
 if __name__ == '__main__':
 
