@@ -12,8 +12,6 @@ __copyright__   = "Copyright 2024, Planet Earth"
 from logging import Logger
 from keras.src import Layer
 
-import numpy as np
-
 import tensorflow as tf
 
 from NEBULA.utils.logging import getLogger
@@ -37,13 +35,9 @@ class NoiseLayer(Layer):
 
     def call(self, inputs, training=None):
         if training:
-            # Inject errors during training
-            # Create a random mask where errors will occur
             error_mask = tf.random.uniform(tf.shape(inputs)) < self._errorProbability
-            # Flip bits or add noise to simulate errors
             errors = tf.cast(error_mask, dtype=inputs.dtype)
-            # Apply errors by adding/subtracting noise or bit flips (here as XOR)
-            corrupted_inputs = inputs + errors  # or customize the error pattern
+            corrupted_inputs = inputs + errors
             return corrupted_inputs
 
         return inputs  # During inference, no noise is added

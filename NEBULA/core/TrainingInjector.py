@@ -33,6 +33,7 @@ def _buildSequentialModel(model: Model, noiseLayer: Layer, index: int) -> Model:
 
     return newModel
 
+
 def _buildFunctionalModel(model: Model, noiseLayer: Layer, index: int) -> Model:
     inputs = model.input
     x = inputs
@@ -45,7 +46,6 @@ def _buildFunctionalModel(model: Model, noiseLayer: Layer, index: int) -> Model:
 
     # Create a new functional model
     return Functional(inputs=inputs, outputs=x)
-
 
 
 class TrainingInjector:
