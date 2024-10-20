@@ -28,28 +28,22 @@ class NoiseLayer(Layer):
     """
 
     _logger: Logger
-    _probability: float
-    _inputShape: np.shape
+    _errorProbability: float
 
     def __init__(self, probability=0.01, **kwargs):
         super().__init__(**kwargs)
         self._logger = getLogger(__name__)
-        self._probability = probability
-
-    def build(self, input_shape):
-        self._inputShape = input_shape
-
-        self.noise = self.add_weight(
-            shape=input_shape[1:],  # match the shape of the previous layer's output
-            initializer='zeros',
-            trainable=False,
-            name='noise_weight'
-        )
-        super(NoiseLayer, self).build(input_shape)
+        self._errorProbability = probability
 
     def call(self, inputs, training=None):
         if training:
-            # Inject noise only during training
-            noise = self._probability * tf.random.normal(shape=tf.shape(inputs))
-            return inputs + noise
+            # Inject errors during training
+            # Create a random mask where errors will occur
+            error_mask = tf.random.uniform(tf.shape(inputs)) < self._errorProbability
+            # Flip bits or add noise to simulate errors
+            errors = tf.cast(error_mask, dtype=inputs.dtype)
+            # Apply errors by adding/subtracting noise or bit flips (here as XOR)
+            corrupted_inputs = inputs + errors  # or customize the error pattern
+            return corrupted_inputs
+
         return inputs  # During inference, no noise is added
