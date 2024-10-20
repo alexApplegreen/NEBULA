@@ -6,7 +6,7 @@ import numpy as np
 
 from NEBULA.core.injector import Injector
 from NEBULA.utils.logging import getLogger
-from utils import ModelUtils
+from utils.ModelUtils import ModelUtils
 
 import tensorflow.keras
 
@@ -18,7 +18,7 @@ class InjectorTest(unittest.TestCase):
 
     def setUp(self):
         if self._model is None:
-            self._model = ModelUtils.ModelUtils.getBasicModel()
+            self._model = ModelUtils.getBasicModel()
 
     def test_injectorWithHundredProbChangesModel(self):
         weightsOrig = self._model.get_weights()
@@ -35,7 +35,7 @@ class InjectorTest(unittest.TestCase):
 
     def test_reconstructModelWorks(self):
         injector = Injector(self._model.layers)
-        modelCopy = ModelUtils.ModelUtils.getBasicModel()
+        modelCopy = ModelUtils.getBasicModel()
 
         # overwrite copy weights with zeros
         for idx, layer in enumerate(self._model.layers):
@@ -101,7 +101,7 @@ class InjectorTest(unittest.TestCase):
     def test_undoOnWrongModelShouldRaiseAttributeError(self):
         with self.assertRaises(ValueError):
             injector = Injector(self._model.layers, probability=.0)
-            otherModel = ModelUtils.ModelUtils.getBasicModel()
+            otherModel = ModelUtils.getBasicModel()
             injector.injectError(self._model)
             injector.undo(otherModel)
 

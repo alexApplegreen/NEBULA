@@ -44,7 +44,6 @@ def _buildFunctionalModel(model: Model, noiseLayer: Layer, index: int) -> Model:
         if i != 0:
             x = layer(x)
 
-    # Create a new functional model
     return Functional(inputs=inputs, outputs=x)
 
 
