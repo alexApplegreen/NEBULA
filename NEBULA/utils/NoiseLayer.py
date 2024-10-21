@@ -10,20 +10,22 @@ __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
 from logging import Logger
+
+import numpy as np
 from keras.src import Layer
 
 import tensorflow as tf
 
 from NEBULA.utils.logging import getLogger
+from NEBULA.utils.commons import flipFloat
 
 
 class NoiseLayer(Layer):
-    # TODO must be tested
     """subclass of keras layer simulating noise during training
     This class is a subclass of keras.layers.layer
     and can be used as such.
     It can be added to any model and will take the shape of the previous layer
-    During training, the weights will add noise to the network during backpropagation
+    During training, the weights will add noise to the network during forwardpropagation
     """
 
     _logger: Logger
@@ -31,15 +33,17 @@ class NoiseLayer(Layer):
 
     def __init__(self, probability: float = 0.01, **kwargs):
         super().__init__(**kwargs)
+        self.trainable = False
         self._logger = getLogger(__name__)
         self._errorProbability = probability
 
     def call(self, inputs, training=None):
         if training:
-            error_mask = tf.random.uniform(tf.shape(inputs)) < self._errorProbability
-            errors = tf.cast(error_mask, dtype=inputs.dtype)
-            corrupted_inputs = inputs + errors
-            return corrupted_inputs
+            self._logger.debug(f"injecting errors during training with BER of {self._errorProbability}")
+            shape = inputs.shape
+            flat = tf.unstack(inputs)
+            result = tf.map_fn(lambda x: flipFloat(x, probability=self._errorProbability), flat)
+            return tf.reshape(result, shape)
 
         return inputs  # During inference, no noise is added
 
