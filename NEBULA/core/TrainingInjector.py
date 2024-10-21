@@ -14,7 +14,7 @@ from logging import Logger
 from keras import Model, Layer
 from keras.src.models import Functional, Sequential
 
-from NEBULA.utils.NoiseLayer import NoiseLayer
+from NEBULA.utils.noiseLayer import NoiseLayer
 from NEBULA.utils.logging import getLogger
 
 
@@ -47,7 +47,7 @@ def _buildFunctionalModel(model: Model, noiseLayer: Layer, index: int) -> Model:
     return Functional(inputs=inputs, outputs=x)
 
 
-class TrainingInjector:
+class TrainingInjector():
     """Use to attach to untrained models
     This injector will simulate biterrors during the training phase
     by adding a noiselayer to the given model.
@@ -58,10 +58,15 @@ class TrainingInjector:
     _logger: Logger
     _probability: float
 
-    def __init__(self) -> None:
+    def __init__(self, probability: float = 0.01) -> None:
+        if probability < .0:
+            raise ValueError("BER cannot be negative")
         self._logger = getLogger(__name__)
+        self._probability = probability
 
     def attach(self, model: Model, index: int = 1) -> Model:
+        if index < 0:
+            raise ValueError("Index cannot be negative")
         # TODO allow user to pass in Noiselayer instance or parameters for it
         """Attach error injecting layer to existing untrained model
         This method will insert a layer into the given model to
@@ -69,7 +74,7 @@ class TrainingInjector:
         index parameter specifies where in the model to attach the pertubating layer.
         The placement has severe impact on the trained model!
         """
-        nl = NoiseLayer()
+        nl = NoiseLayer(probability=self._probability)
 
         if isinstance(model, Sequential):
             return _buildSequentialModel(model, nl, index)

@@ -2,7 +2,7 @@ import pkg_resources
 from NEBULA.utils.logging import getLogger, setLoggingLevel
 from NEBULA.core.legacyInjector import LegacyInjector
 from NEBULA.core.injector import Injector
-from NEBULA.core.TrainingInjector import TrainingInjector
+from NEBULA.core.trainingInjector import TrainingInjector
 
 import multiprocessing as mp
 

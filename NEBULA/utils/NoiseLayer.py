@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-NoiseLayer.py
+noiseLayer.py
     Class to mimic noise during training
 """
 
@@ -18,6 +18,7 @@ from NEBULA.utils.logging import getLogger
 
 
 class NoiseLayer(Layer):
+    # TODO must be tested
     """subclass of keras layer simulating noise during training
     This class is a subclass of keras.layers.layer
     and can be used as such.
@@ -28,7 +29,7 @@ class NoiseLayer(Layer):
     _logger: Logger
     _errorProbability: float
 
-    def __init__(self, probability=0.01, **kwargs):
+    def __init__(self, probability: float = 0.01, **kwargs):
         super().__init__(**kwargs)
         self._logger = getLogger(__name__)
         self._errorProbability = probability
@@ -41,3 +42,13 @@ class NoiseLayer(Layer):
             return corrupted_inputs
 
         return inputs  # During inference, no noise is added
+
+    @property
+    def probability(self) -> float:
+        return self._errorProbability
+
+    @probability.setter
+    def probability(self, probability: float) -> None:
+        if probability < .0:
+            raise ValueError("Probablility cannot be negative")
+        self._errorProbability = probability
