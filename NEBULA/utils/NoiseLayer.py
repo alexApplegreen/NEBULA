@@ -40,10 +40,8 @@ class NoiseLayer(Layer):
     def call(self, inputs, training=None):
         if training:
             self._logger.debug(f"injecting errors during training with BER of {self._errorProbability}")
-            shape = inputs.shape
-            flat = tf.unstack(inputs)
-            result = tf.map_fn(lambda x: flipFloat(x, probability=self._errorProbability), flat)
-            return tf.reshape(result, shape)
+            # TODO clashes with tensorflows graph stuff
+            return [flipFloat(x, probability=self._errorProbability) for x in inputs]
 
         return inputs  # During inference, no noise is added
 
