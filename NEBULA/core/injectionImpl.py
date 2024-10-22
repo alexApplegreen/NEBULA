@@ -13,10 +13,9 @@ import multiprocessing as mp
 from threading import get_ident
 
 import numpy as np
-import tensorflow as tf
 
-from NEBULA.utils.logging import getLogger
 from NEBULA.utils.commons import flipFloat
+from NEBULA.utils.logging import getLogger
 
 
 class InjectionImpl:

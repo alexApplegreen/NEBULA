@@ -12,13 +12,11 @@ __copyright__   = "Copyright 2024, Planet Earth"
 from logging import Logger
 
 import numpy as np
-from keras.src import Layer
-from keras.src.layers import Flatten
-
 import tensorflow as tf
+from keras.src import Layer
 
+from NEBULA.utils.commons import flipTensorBits
 from NEBULA.utils.logging import getLogger
-from NEBULA.utils.commons import flipFloat, flipTensorBits
 
 
 class NoiseLayer(Layer):

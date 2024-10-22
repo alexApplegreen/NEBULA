@@ -2,6 +2,7 @@ import struct
 import tensorflow as tf
 import numpy as np
 
+
 def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
     """Helper function which flips bits in a given memory range with a given probability
     returns the modified float number as a tf.tensor
@@ -31,9 +32,11 @@ def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
     else:
         return bitcast_to_float
 
+
 def loadFatModel():
     # TODO implement helper function to load model using NoiseLayer
     pass
+
 
 def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype):
     if dtype is np.float32:
@@ -49,6 +52,7 @@ def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype):
         return flippedFloat
     else:
         return input
+
 
 def binary(num):
     """
