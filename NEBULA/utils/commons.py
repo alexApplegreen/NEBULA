@@ -1,3 +1,4 @@
+import struct
 import tensorflow as tf
 import numpy as np
 
@@ -29,3 +30,30 @@ def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
         return 0
     else:
         return bitcast_to_float
+
+def loadFatModel():
+    # TODO implement helper function to load model using NoiseLayer
+    pass
+
+def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype):
+    if dtype is np.float32:
+        x_bits = tf.bitcast(input, tf.int32)
+        randomValues = tf.random.uniform(shape=tf.shape(x_bits), minval=0.0, maxval=1.0)
+        flipMask = randomValues < probability
+        bitPositions = tf.random.uniform(shape=tf.shape(x_bits), minval=0, maxval=32, dtype=tf.int32)
+        bitFlips = tf.bitwise.left_shift(tf.ones_like(x_bits, dtype=tf.int32), bitPositions)
+
+        flippedBits = tf.bitwise.bitwise_xor(x_bits, tf.where(flipMask, bitFlips, 0))
+        flippedFloat = tf.bitcast(flippedBits, tf.float32)
+
+        return flippedFloat
+    else:
+        return input
+
+def binary(num):
+    """
+    Helper Function to display the binary representation of floating point numbers
+    Source: https://stackoverflow.com/questions/16444726/binary-representation-of-float-in-python-bits-not-hex
+    Validated using https://www.h-schmidt.net/FloatConverter/IEEE754.html
+    """
+    return ''.join('{:0>8b}'.format(c) for c in struct.pack('!f', num))

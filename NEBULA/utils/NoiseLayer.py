@@ -18,7 +18,7 @@ from keras.src.layers import Flatten
 import tensorflow as tf
 
 from NEBULA.utils.logging import getLogger
-from NEBULA.utils.commons import flipFloat
+from NEBULA.utils.commons import flipFloat, flipTensorBits
 
 
 class NoiseLayer(Layer):
@@ -39,12 +39,21 @@ class NoiseLayer(Layer):
         self._errorProbability = probability
 
     def call(self, inputs, training=None):
-        if training:
+        """Injects noise into model during training
+        This method is called by keras during traning.
+        While feeding the data through the model (before evaluating the loss function)
+        this will take the values from the preceeding layers and modfiy them with a given probability.
+        This will pertubate the results of the model during training.
+        """
+        if training is True:
             self._logger.debug(f"injecting errors during training with BER of {self._errorProbability}")
-            results = tf.map_fn(flipFloat, inputs)
+            results = tf.map_fn(self._outerHelper, inputs)
             return results
 
         return inputs  # During inference, no noise is added
+
+    def _outerHelper(self, x):
+        return flipTensorBits(x, probability=self._errorProbability, dtype=np.float32)
 
     @property
     def probability(self) -> float:
