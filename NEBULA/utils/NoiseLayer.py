@@ -46,6 +46,7 @@ class NoiseLayer(Layer):
         if training is True:
             self._logger.debug(f"injecting errors during training with BER of {self._errorProbability}")
             results = tf.map_fn(self._outerHelper, inputs)
+            # results = tf.clip_by_value(results, -1.0, 1.0)  TODO make this configurable
             return results
 
         return inputs  # During inference, no noise is added
