@@ -65,15 +65,14 @@ class TrainingInjector():
         self._probability = probability
 
     def attach(self, model: Model, index: int = 1) -> Model:
-        if index < 0:
-            raise ValueError("Index cannot be negative")
-        # TODO allow user to pass in Noiselayer instance or parameters for it
         """Attach error injecting layer to existing untrained model
         This method will insert a layer into the given model to
         cause noise during backpropagation in the training of the model.
         index parameter specifies where in the model to attach the pertubating layer.
         The placement has severe impact on the trained model!
         """
+        if index < 0:
+            raise ValueError("Index cannot be negative")
         nl = NoiseLayer(probability=self._probability)
 
         if isinstance(model, Sequential):
