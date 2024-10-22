@@ -29,7 +29,7 @@ model = models.Sequential([
 ])
 
 # inject error during training
-ti = TrainingInjector(probability=0.5)
+ti = TrainingInjector(probability=0.1)
 model = ti.attach(model, 3)
 
 model.summary()

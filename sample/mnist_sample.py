@@ -5,6 +5,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import to_categorical
 
 from NEBULA import Injector
+from NEBULA.utils import NoiseLayer
 
 if __name__ == '__main__':
 
@@ -18,7 +19,8 @@ if __name__ == '__main__':
     # Convert labels to one-hot encoding
     y_test = to_categorical(y_test, 10)
 
-    # Load the pre-trained model from .h5 file
+    # Load the pre-trained model from .h5 file either with or without FAT
+    # model = load_model('sampledata/fat_mnist_model.h5', compile=False, custom_objects={'NoiseLayer': NoiseLayer})
     model = load_model('sampledata/mnist_model.h5', compile=False)
     weightsBefore = model.get_weights()
 

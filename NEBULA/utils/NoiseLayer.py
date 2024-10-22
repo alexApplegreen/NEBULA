@@ -13,6 +13,7 @@ from logging import Logger
 
 import numpy as np
 from keras.src import Layer
+from keras.src.layers import Flatten
 
 import tensorflow as tf
 
@@ -40,8 +41,8 @@ class NoiseLayer(Layer):
     def call(self, inputs, training=None):
         if training:
             self._logger.debug(f"injecting errors during training with BER of {self._errorProbability}")
-            # TODO clashes with tensorflows graph stuff
-            return [flipFloat(x, probability=self._errorProbability) for x in inputs]
+            results = tf.map_fn(flipFloat, inputs)
+            return results
 
         return inputs  # During inference, no noise is added
 
