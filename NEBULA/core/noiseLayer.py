@@ -29,12 +29,14 @@ class NoiseLayer(Layer):
 
     _logger: Logger
     _errorProbability: float
+    _clipping: None | tuple = None
 
-    def __init__(self, probability: float = 0.01, **kwargs):
+    def __init__(self, probability: float = 0.01, clipping: tuple | None = None, **kwargs):
         super().__init__(**kwargs)
         self.trainable = False
         self._logger = getLogger(__name__)
         self._errorProbability = probability
+        self._parseClipping(clipping)
 
     def call(self, inputs, training=None):
         """Injects noise into model during training
@@ -46,13 +48,34 @@ class NoiseLayer(Layer):
         if training is True:
             self._logger.debug(f"injecting errors during training with BER of {self._errorProbability}")
             results = tf.map_fn(self._outerHelper, inputs)
-            # results = tf.clip_by_value(results, -1.0, 1.0)  TODO make this configurable
+            if self._clipping is not None:
+                self._logger.debug(f"clipping enabled with min: {self._clipping[0]}, min: {self._clipping[1]}")
+                results = tf.clip_by_value(results, self._clipping[0], self._clipping[1])
             return results
 
         return inputs  # During inference, no noise is added
 
     def _outerHelper(self, x):
         return flipTensorBits(x, probability=self._errorProbability, dtype=np.float32)
+
+    def _parseClipping(self, clipping) -> None:
+        """Set the min and max clipping values as tuple
+        helper function to set the min and max values for clipping of the layer's weights.
+        structure of an accepted tuple: (min, max)
+        if tuple does not fit above structure, clipping will not be used.
+        Also values in tuple must be numerics
+        """
+        if clipping is None:
+            return
+        if len(clipping) == 2 and clipping[0] < clipping[1]:
+            try:
+                float(clipping[0])
+                float(clipping[1])
+                self._clipping = clipping
+            except ValueError:
+                raise ValueError("Values must be numerics")
+        else:
+            raise ValueError("Clipping must be tuple of structure: (min, max)")
 
     @property
     def probability(self) -> float:
@@ -63,3 +86,11 @@ class NoiseLayer(Layer):
         if probability < .0:
             raise ValueError("Probablility cannot be negative")
         self._errorProbability = probability
+
+    @property
+    def clipping(self) -> tuple:
+        return self._clipping
+
+    @clipping.setter
+    def clipping(self, clipping: tuple) -> None:
+        self._parseClipping(clipping)

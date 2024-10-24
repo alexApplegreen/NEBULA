@@ -6,7 +6,6 @@ from tensorflow.keras.models import load_model
 
 
 def binary(num):
-    # TODO add to NEBULA __init__
     """
     Helper Function to display the binary representation of floating point numbers
     Source: https://stackoverflow.com/questions/16444726/binary-representation-of-float-in-python-bits-not-hex

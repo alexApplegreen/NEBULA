@@ -57,23 +57,25 @@ class TrainingInjector():
 
     _logger: Logger
     _probability: float
+    _clipping: tuple | None
 
-    def __init__(self, probability: float = 0.01) -> None:
+    def __init__(self, probability: float = 0.01, clipping: tuple | None = None) -> None:
         if probability < .0:
             raise ValueError("BER cannot be negative")
         self._logger = getLogger(__name__)
         self._probability = probability
+        self._clipping = clipping
 
     def attach(self, model: Model, index: int = 1) -> Model:
         """Attach error injecting layer to existing untrained model
         This method will insert a layer into the given model to
         cause noise during backpropagation in the training of the model.
         index parameter specifies where in the model to attach the pertubating layer.
-        The placement has severe impact on the trained model!
+        The placement has severe impact on the trained model
         """
         if index < 0:
             raise ValueError("Index cannot be negative")
-        nl = NoiseLayer(probability=self._probability)
+        nl = NoiseLayer(probability=self._probability, clipping=self._clipping)
 
         if isinstance(model, Sequential):
             return _buildSequentialModel(model, nl, index)
