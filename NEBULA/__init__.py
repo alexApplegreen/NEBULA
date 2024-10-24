@@ -9,7 +9,7 @@ import multiprocessing as mp
 
 if mp.current_process().name == 'MainProcess':
     logger = getLogger(__name__)
-    logger.info(f"NEBULA VERSION: {pkg_resources.require('NEBULA')[0].version}")
+    logger.debug(f"NEBULA VERSION: {pkg_resources.require('NEBULA')[0].version}")
 
 __all__ = [
     "setLoggingLevel",
