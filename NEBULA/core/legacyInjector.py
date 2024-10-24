@@ -11,7 +11,7 @@ __copyright__   = "Copyright 2024, Planet Earth"
 
 from keras import Model, Layer
 
-from NEBULA.core.BaseInjector import BaseInjector
+from NEBULA.core.baseInjector import BaseInjector
 from NEBULA.core.legacy import flip_random_bits_in_model_weights
 from NEBULA.utils.logging import getLogger
 

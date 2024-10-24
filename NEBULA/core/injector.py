@@ -16,7 +16,7 @@ from multiprocessing import shared_memory
 import numpy as np
 from keras import Model, Layer
 
-from NEBULA.core.BaseInjector import BaseInjector
+from NEBULA.core.baseInjector import BaseInjector
 from NEBULA.core.injectionImpl import InjectionImpl
 from NEBULA.utils.logging import getLogger
 
