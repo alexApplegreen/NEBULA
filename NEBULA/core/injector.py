@@ -26,6 +26,7 @@ def _initialize_shared_weights(layers: list[Layer]) -> dict:
     shared_weights = {}
     for layer in layers:
         layer_name = layer.name
+        # TODO probably add dtype in case we're getting funky with quantization
         shared_weights[layer_name] = {"membuf": [], "shapes": []}
 
         for weight in layer.get_weights():
@@ -72,10 +73,7 @@ class Injector(BaseInjector):
         if self._process_pool is not None:
             self._process_pool.close()
             self._process_pool.terminate()
-        for layer in self._sharedWeights:
-            for i in range(len(self._sharedWeights[layer]["membuf"])):
-                self._sharedWeights[layer]["membuf"][i].close()
-                self._sharedWeights[layer]["membuf"][i].unlink()
+        self._deleteShareMem()
 
     def injectError(self, model: Model) -> None:
         """ Method to inject errors into the model
@@ -89,9 +87,23 @@ class Injector(BaseInjector):
         results = InjectionImpl.injectToWeights(self._sharedWeights, self._probability, self._process_pool)
         self._reconstructModel(model, results)
         self._history.push(model.layers)
+        self._deleteShareMem()
+        self._sharedWeights = _initialize_shared_weights(model.layers)
 
     def undo(self, model: Model) -> None:
         try:
             super().undo(model)
-        except AttributeError:
-            self._logger.error("could not set layer data by name")
+        except ValueError:
+            raise (ValueError("You probably meant to pass in a different model"))
+
+    def _deleteShareMem(self) -> None:
+        """Helper function to securely delete shared memory
+        """
+        try:
+            for layer in self._sharedWeights:
+                for i in range(len(self._sharedWeights[layer]["membuf"])):
+                    self._sharedWeights[layer]["membuf"][i].close()
+                    self._sharedWeights[layer]["membuf"][i].unlink()
+        except IndexError:
+            self._logger.warning("Mismatch in memory allocation during deletion")
+            pass

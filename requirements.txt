@@ -2,6 +2,7 @@ absl-py==2.1.0
 astunparse==1.6.3
 certifi==2024.8.30
 charset-normalizer==3.3.2
+coverage==7.6.3
 flake8==7.1.1
 flatbuffers==24.3.25
 gast==0.6.0
@@ -22,6 +23,7 @@ numpy==1.26.4
 opt-einsum==3.3.0
 optree==0.12.1
 packaging==24.1
+pillow==10.4.0
 protobuf==4.25.5
 pycodestyle==2.12.1
 pyflakes==3.2.0

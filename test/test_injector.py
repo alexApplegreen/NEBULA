@@ -1,3 +1,4 @@
+import copy
 import unittest
 
 from keras import Model
@@ -5,7 +6,7 @@ import numpy as np
 
 from NEBULA.core.injector import Injector
 from NEBULA.utils.logging import getLogger
-from utils import ModelUtils
+from utils.ModelUtils import ModelUtils
 
 import tensorflow.keras
 
@@ -17,7 +18,7 @@ class InjectorTest(unittest.TestCase):
 
     def setUp(self):
         if self._model is None:
-            self._model = ModelUtils.ModelUtils.getBasicModel()
+            self._model = ModelUtils.getBasicModel()
 
     def test_injectorWithHundredProbChangesModel(self):
         weightsOrig = self._model.get_weights()
@@ -34,7 +35,7 @@ class InjectorTest(unittest.TestCase):
 
     def test_reconstructModelWorks(self):
         injector = Injector(self._model.layers)
-        modelCopy = ModelUtils.ModelUtils.getBasicModel()
+        modelCopy = ModelUtils.getBasicModel()
 
         # overwrite copy weights with zeros
         for idx, layer in enumerate(self._model.layers):
@@ -91,3 +92,31 @@ class InjectorTest(unittest.TestCase):
 
         for orig, new in zip(weightsOrig, weightsUndone):
             self.assertTrue(np.allclose(orig, new))
+
+    def test_undoOnEmptyHistoryShouldRaiseIndexError(self):
+        with self.assertRaises(IndexError):
+            injector = Injector(self._model.layers)
+            injector.undo(self._model)
+
+    def test_undoOnWrongModelShouldRaiseAttributeError(self):
+        with self.assertRaises(ValueError):
+            injector = Injector(self._model.layers, probability=.0)
+            otherModel = ModelUtils.getBasicModel()
+            injector.injectError(self._model)
+            injector.undo(otherModel)
+
+    def test_updatingAfterInjectionWorks(self):
+        injector = Injector(self._model.layers, probability=1.0)
+
+        for layer in self._model.layers:
+            data = injector._sharedWeights[layer.name]
+            for idx, weight in enumerate(layer.get_weights()):
+                weightFromBuffer = np.ndarray(
+                    data['shapes'][idx],
+                    dtype=np.float32,
+                    buffer=data['membuf'][idx].buf
+                )
+                if np.any(np.isnan(weight)):
+                    self.assertEqual(len(weight), len(weightFromBuffer))
+                else:
+                    self.assertTrue(np.allclose(weight, weightFromBuffer))

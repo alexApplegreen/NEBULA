@@ -4,7 +4,7 @@ from keras.datasets import mnist
 from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import to_categorical
 
-from NEBULA.core.injector import Injector
+from NEBULA import Injector, loadFatModel
 
 if __name__ == '__main__':
 
@@ -18,8 +18,9 @@ if __name__ == '__main__':
     # Convert labels to one-hot encoding
     y_test = to_categorical(y_test, 10)
 
-    # Load the pre-trained model from .h5 file
-    model = load_model('sampledata/mnist_model.h5', compile=False)
+    # Load the pre-trained model from .h5 file either with or without FAT
+    model = loadFatModel('sampledata/fat_mnist_model.h5', compile=False)
+    # model = load_model('sampledata/mnist_model.h5', compile=False)
     weightsBefore = model.get_weights()
 
     injector = Injector(model.layers, probability=0.00005)
