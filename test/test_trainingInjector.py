@@ -2,7 +2,8 @@ import unittest
 
 from NEBULA.core.trainingInjector import TrainingInjector
 from NEBULA.core.trainingInjector import _buildFunctionalModel, _buildSequentialModel
-from NEBULA.utils.noiseLayer import NoiseLayer
+from NEBULA.core.noiseLayer import NoiseLayer
+
 from utils.ModelUtils import ModelUtils
 
 

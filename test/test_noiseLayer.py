@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow._api.v2.errors import InvalidArgumentError
 
-from NEBULA.utils.noiseLayer import NoiseLayer
+from NEBULA.core.noiseLayer import NoiseLayer
 
 
 class NoiseLayerTest(unittest.TestCase):

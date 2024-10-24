@@ -1,5 +1,5 @@
-import struct
 import tensorflow as tf
+
 import numpy as np
 
 
@@ -33,11 +33,6 @@ def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
         return bitcast_to_float
 
 
-def loadFatModel():
-    # TODO implement helper function to load model using NoiseLayer
-    pass
-
-
 def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype):
     if dtype is np.float32:
         x_bits = tf.bitcast(input, tf.int32)
@@ -52,12 +47,3 @@ def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype):
         return flippedFloat
     else:
         return input
-
-
-def binary(num):
-    """
-    Helper Function to display the binary representation of floating point numbers
-    Source: https://stackoverflow.com/questions/16444726/binary-representation-of-float-in-python-bits-not-hex
-    Validated using https://www.h-schmidt.net/FloatConverter/IEEE754.html
-    """
-    return ''.join('{:0>8b}'.format(c) for c in struct.pack('!f', num))

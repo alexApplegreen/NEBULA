@@ -14,7 +14,7 @@ from logging import Logger
 from keras import Model, Layer
 from keras.src.models import Functional, Sequential
 
-from NEBULA.utils.noiseLayer import NoiseLayer
+from NEBULA.core.noiseLayer import NoiseLayer
 from NEBULA.utils.logging import getLogger
 
 

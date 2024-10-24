@@ -1,8 +1,12 @@
 from NEBULA.utils.logging import setLoggingLevel, getLogger
-from NEBULA.utils.noiseLayer import NoiseLayer
+from NEBULA.utils.commons import flipFloat, flipTensorBits
+from NEBULA.utils.helper import loadFatModel, binary
 
 __all__ = [
     "setLoggingLevel",
     "getLogger",
-    "NoiseLayer"
+    "flipFloat",
+    "flipTensorBits",
+    "loadFatModel",
+    "binary"
 ]

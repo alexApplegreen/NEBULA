@@ -4,8 +4,7 @@ from keras.datasets import mnist
 from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import to_categorical
 
-from NEBULA import Injector
-from NEBULA.utils import NoiseLayer
+from NEBULA import Injector, loadFatModel
 
 if __name__ == '__main__':
 
@@ -20,8 +19,8 @@ if __name__ == '__main__':
     y_test = to_categorical(y_test, 10)
 
     # Load the pre-trained model from .h5 file either with or without FAT
-    # model = load_model('sampledata/fat_mnist_model.h5', compile=False, custom_objects={'NoiseLayer': NoiseLayer})
-    model = load_model('sampledata/mnist_model.h5', compile=False)
+    model = loadFatModel('sampledata/fat_mnist_model.h5', compile=False)
+    # model = load_model('sampledata/mnist_model.h5', compile=False)
     weightsBefore = model.get_weights()
 
     injector = Injector(model.layers, probability=0.00005)
