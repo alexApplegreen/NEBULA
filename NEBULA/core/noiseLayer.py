@@ -88,7 +88,7 @@ class NoiseLayer(Layer):
         self._errorProbability = probability
 
     @property
-    def clipping(self) -> tuple:
+    def clipping(self) -> tuple | None:
         return self._clipping
 
     @clipping.setter
