@@ -1,3 +1,5 @@
+<img src="https://github.com/user-attachments/assets/0a09265f-17f7-4ac2-b405-72ce12dd21f5" height="500px">
+
 # NEBULA (Neural Error Bit Upset and Learning Adaptation)
 NEBULA is a library providing tools for testing out the impact of radiation-induced biterrors
 on the performance of neural networks.
