@@ -3,7 +3,6 @@ from tensorflow.keras import layers, models
 import numpy as np
 
 from NEBULA import TrainingInjector
-from NEBULA import LegacyInjector
 
 # Load MNIST dataset
 mnist = tf.keras.datasets.mnist
