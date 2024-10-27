@@ -1,3 +1,14 @@
+#!/usr/bin/env python3
+
+"""
+quantizer.py
+    Functions for quantization of models
+"""
+
+__author__      = "Alexander Tepe"
+__email__       = "alexander.tepe@hotmail.de"
+__copyright__   = "Copyright 2024, Planet Earth"
+
 from logging import Logger
 
 from keras.src.models.cloning import clone_model

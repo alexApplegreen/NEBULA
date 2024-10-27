@@ -43,9 +43,6 @@ class InjectionImpl:
             InjectionImpl._concurrentErrorInjection,
             [(layer, sharedMem[layer], probability) for layer in sharedMem.keys()]
         )
-
-        # processPool.join() <-- ätzendes Gift
-
         return results.get()
 
     @staticmethod
