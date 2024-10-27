@@ -28,3 +28,7 @@ class Quantizer():
         # TODO actually quantize model
         quantModel = clone_model(model)
         return quantModel
+
+    def quantizeAwareTrain(self, model: Model)-> None:
+        # TODO do something clever here
+        pass
