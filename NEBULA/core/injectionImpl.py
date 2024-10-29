@@ -31,21 +31,6 @@ class InjectionImpl:
     _logger = getLogger(__name__)
 
     @staticmethod
-    def injectToWeights(sharedMem: dict, probability: float, processPool: mp.Pool) -> dict:
-        """Modify weights of model using multiprocessing.
-        Tensorflow locks GIL which blocks all threads which are not tensorflow
-        control flow. Processes can still run.
-        Since python parameters are passed as object references, the dictionary is
-        modified in place.
-        """
-        # Apply the error injection function to each layer in parallel
-        results = processPool.starmap_async(
-            InjectionImpl._concurrentErrorInjection,
-            [(layer, sharedMem[layer], probability) for layer in sharedMem.keys()]
-        )
-        return results.get()
-
-    @staticmethod
     def _concurrentErrorInjection(layername: str, layerMem: dict, probability: float):
         """Routine which is executed by the subprocesses
         The weights from the model's layer are read from shared memory
