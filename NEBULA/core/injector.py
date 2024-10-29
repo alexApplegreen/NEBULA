@@ -18,6 +18,7 @@ from keras import Model, Layer
 
 from NEBULA.core.baseInjector import BaseInjector
 from NEBULA.core.injectionImpl import InjectionImpl
+from NEBULA.core.errorTypes import ErrorTypes
 from NEBULA.utils.logging import getLogger
 
 
@@ -75,22 +76,39 @@ class Injector(BaseInjector):
             self._process_pool.terminate()
         self._deleteShareMem()
 
-    def injectError(self, model: Model) -> None:
+    def injectError(self, model: Model, errorType: ErrorTypes = ErrorTypes.NORMAL) -> None:
         """ Method to inject errors into the model
         This method edits the model in place!
         Uses one process per layer of the given model and injects biterrors into the model
         with a Bit Error Rate of the given probability.
         """
+        # TODO test Errortypes
         self._logger.debug(f"Injecting error with probability of {self._probability}")
 
         # inject error
-        results = InjectionImpl.injectToWeights(self._sharedWeights, self._probability, self._process_pool)
+        results = self._injectToWeights(errorType)
         self._reconstructModel(model, results)
         self._history.push(model.layers)
         self._deleteShareMem()
         self._sharedWeights = _initialize_shared_weights(model.layers)
 
+    def _injectToWeights(self, errorType: ErrorTypes = ErrorTypes.NORMAL) -> dict:
+        """Modify weights of model using multiprocessing.
+        Tensorflow locks GIL which blocks all threads which are not tensorflow
+        control flow. Processes can still run.
+        Since python parameters are passed as object references, the dictionary is
+        modified in place.
+        This also applies the special errortype strategy given by the callable enum value
+        """
+        # Apply the error injection function to each layer in parallel
+        results = self._process_pool.starmap_async(
+            errorType,  # this is basically a function
+            [(layer, self._sharedWeights[layer], self._probability) for layer in self._sharedWeights.keys()]
+        )
+        return results.get()
+
     def undo(self, model: Model) -> None:
+        """Undo change made by injecting error into weight"""
         try:
             super().undo(model)
         except ValueError:
