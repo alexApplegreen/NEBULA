@@ -30,12 +30,12 @@ class ErrorTypes(Enum):
     @staticmethod
     def _injectBurstError(layername: str, layerMem: dict, probability: float):
         # TODO implement this
-        pass
+        raise NotImplemented
 
     @staticmethod
     def _injectStuckAtError(layername: str, layerMem: dict, probability: float):
         # TODO implement this
-        pass
+        raise NotImplemented
 
     @staticmethod
     def _injectCustom(layername: str, layerMem: dict, probability: float):
