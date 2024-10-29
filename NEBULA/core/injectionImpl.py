@@ -9,7 +9,6 @@ __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
 
-import multiprocessing as mp
 from threading import get_ident
 
 import numpy as np

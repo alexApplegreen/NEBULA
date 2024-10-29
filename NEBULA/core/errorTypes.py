@@ -1,9 +1,7 @@
 from enum import Enum
-from abc import abstractmethod
 from logging import getLogger
 
 from NEBULA.core.injectionImpl import InjectionImpl
-from keras import Layer
 
 
 class ErrorTypes(Enum):

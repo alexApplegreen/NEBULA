@@ -17,7 +17,6 @@ import numpy as np
 from keras import Model, Layer
 
 from NEBULA.core.baseInjector import BaseInjector
-from NEBULA.core.injectionImpl import InjectionImpl
 from NEBULA.core.errorTypes import ErrorTypes
 from NEBULA.utils.logging import getLogger
 
