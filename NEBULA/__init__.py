@@ -4,6 +4,7 @@ from NEBULA.core.legacyInjector import LegacyInjector
 from NEBULA.core.injector import Injector
 from NEBULA.core.trainingInjector import TrainingInjector
 from NEBULA.utils.helper import loadFatModel
+from NEBULA.core.errorTypes import ErrorTypes
 
 import multiprocessing as mp
 
@@ -17,4 +18,5 @@ __all__ = [
     "Injector",
     "TrainingInjector",
     "loadFatModel",
+    "ErrorTypes",
 ]
