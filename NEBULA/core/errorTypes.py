@@ -22,7 +22,7 @@ class ErrorTypes(Enum):
         return obj
 
     def __call__(self, layername: str, layerMem: dict, probability: float):
-        self._logger.info(f"choosing strategy {self} for errorinjection")
+        self._logger.debug(f"choosing strategy {self} for errorinjection")
         return self.func(layername, layerMem, probability)
 
     @staticmethod

@@ -81,6 +81,8 @@ class Injector(BaseInjector):
         This method edits the model in place!
         Uses one process per layer of the given model and injects biterrors into the model
         with a Bit Error Rate of the given probability.
+        This method applies the given errortype to all layers of the model.
+        It is possible to override this method to use different errortypes per modellayer
         """
         # TODO test Errortypes
         self._logger.debug(f"Injecting error with probability of {self._probability}")
