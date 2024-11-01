@@ -40,3 +40,15 @@ class TestInjectorImpl(unittest.TestCase):
 
         self.assertEqual("Test", layerName)
         self.assertNotEqual(origWeights, newWeights)
+
+    def test_concurrentBurstRoutine(self):
+        origWeights = self._model.get_weights()
+
+        layerName, newWeights = InjectionImpl._concurrentBurstInjection("Test", self._layerMem, probability=1.0)
+
+        self.assertEqual("Test", layerName)
+        self.assertNotEqual(origWeights, newWeights)
+
+    def test_burstErrorsAreActuallyAdjacentBits(self):
+        # TODO implement this (test that burst errors are actually adjacent)
+        self.fail()

@@ -6,6 +6,7 @@ import numpy as np
 
 from NEBULA.core.injector import Injector
 from NEBULA.utils.logging import getLogger
+from NEBULA.core.errorTypes import ErrorTypes
 from utils.ModelUtils import ModelUtils
 
 import tensorflow.keras
@@ -120,3 +121,16 @@ class InjectorTest(unittest.TestCase):
                     self.assertEqual(len(weight), len(weightFromBuffer))
                 else:
                     self.assertTrue(np.allclose(weight, weightFromBuffer))
+
+    def test_injectorWorksWithBurstErrorType(self):
+        weightsOrig = self._model.get_weights()
+        injector = Injector(self._model.layers, probability=1.0)
+        injector.injectError(self._model, errorType=ErrorTypes.BURST)
+        weightsNew = self._model.get_weights()
+
+        allSame = True
+        for orig, new in zip(weightsOrig, weightsNew):
+            allSame = np.allclose(orig, new)
+            if not allSame:
+                break
+        self.assertFalse(allSame)

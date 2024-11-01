@@ -43,10 +43,7 @@ class InjectionImpl:
         weights = []
 
         try:
-            for shm, shape in zip(layerMem["membuf"], layerMem["shapes"]):
-                # TODO do not hardcode Float32!!!!
-                weights.append(np.ndarray(shape, dtype=np.float32, buffer=shm.buf))
-
+            weights = InjectionImpl._shmHelper(layerMem)
             newWeights = []
             for weight in weights:
                 shape = weight.shape
@@ -64,3 +61,47 @@ class InjectionImpl:
             # Shared Memory is not accessible, return unmodified weights
             InjectionImpl._logger.error(f"Cannot access argument {e.args[0]} of shared memory layer {layername}")
             return layername, weights
+
+    @staticmethod
+    def _concurrentStuckAtInjection(layername: str, layerMem: dict, probability: float):
+        # TODO
+        return layername, layerMem
+
+    @staticmethod
+    def _concurrentBurstInjection(layername: str, layerMem: dict, probability: float):
+        InjectionImpl._logger.debug(
+            f"started worker process {get_ident()} on layer {layername} with BER of {probability}"
+        )
+
+        weights = []
+
+        try:
+            weights = InjectionImpl._shmHelper(layerMem)
+            newWeights = []
+
+            for weight in weights:
+                shape = weight.shape
+                if weight.dtype == np.float32:
+                    flattenedWeights = weight.flatten()
+                    for i in range(len(flattenedWeights)):
+                        flattenedWeights[i] = flipFloat(flattenedWeights[i], probability=probability)
+                    newWeight = flattenedWeights.reshape(shape)
+                    newWeights.append(newWeight)
+                else:
+                    newWeights.append(weight)
+
+            return layername, newWeights
+
+        except KeyError as e:
+            # Shared Memory is not accessible, return unmodified weights
+            InjectionImpl._logger.error(f"Cannot access argument {e.args[0]} of shared memory layer {layername}")
+            return layername, weights
+
+
+    @staticmethod
+    def _shmHelper(layerMem: dict) -> list[np.ndarray]:
+        weights = []
+        for shm, shape in zip(layerMem["membuf"], layerMem["shapes"]):
+            # TODO do not hardcode Float32!!!!
+            weights.append(np.ndarray(shape, dtype=np.float32, buffer=shm.buf))
+        return weights

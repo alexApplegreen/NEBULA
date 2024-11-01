@@ -33,7 +33,7 @@ def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
         return bitcast_to_float
 
 
-def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype):
+def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype) -> tf.Tensor:
     if dtype is np.float32:
         x_bits = tf.bitcast(input, tf.int32)
         randomValues = tf.random.uniform(shape=tf.shape(x_bits), minval=0.0, maxval=1.0)
