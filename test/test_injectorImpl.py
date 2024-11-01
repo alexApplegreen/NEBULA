@@ -48,7 +48,3 @@ class TestInjectorImpl(unittest.TestCase):
 
         self.assertEqual("Test", layerName)
         self.assertNotEqual(origWeights, newWeights)
-
-    def test_burstErrorsAreActuallyAdjacentBits(self):
-        # TODO implement this (test that burst errors are actually adjacent)
-        self.fail()

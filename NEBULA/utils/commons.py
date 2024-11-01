@@ -35,7 +35,7 @@ def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
         return bitcast_to_float
 
 
-def flipAdjacentBits(value: float, n_bits: int, probability: float) -> float:
+def flipAdjacentBits(value: float, burstLength: int, probability: float) -> float:
     """
     Flips `n_bits` adjacent bits in a `float32` value at a random starting position,
     based on a given probability.
@@ -57,11 +57,11 @@ def flipAdjacentBits(value: float, n_bits: int, probability: float) -> float:
     bit_list = list(f'{int_value:032b}')
 
     # Choose a random starting index for adjacent bits
-    start_index = random.randint(0, 32 - n_bits)
+    start_index = random.randint(0, 32 - burstLength)
 
     # Flip adjacent bits based on the probability
     if random.random() < probability:
-        for i in range(start_index, start_index + n_bits):
+        for i in range(start_index, start_index + burstLength):
             bit_list[i] = '1' if bit_list[i] == '0' else '0'
 
     # Convert back to integer
