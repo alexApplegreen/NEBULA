@@ -84,7 +84,7 @@ class InjectionImpl:
                 if weight.dtype == np.float32:
                     flattenedWeights = weight.flatten()
                     for i in range(len(flattenedWeights)):
-                        flattenedWeights[i] = flipAdjacentBits(flattenedWeights[i], probability=probability, burstLength=2)
+                        flattenedWeights[i] = flipAdjacentBits(flattenedWeights[i], 3, probability)
                     newWeight = flattenedWeights.reshape(shape)
                     newWeights.append(newWeight)
                 else:

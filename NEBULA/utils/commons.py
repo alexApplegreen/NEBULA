@@ -1,7 +1,8 @@
 import tensorflow as tf
 
 import numpy as np
-import math
+import struct
+import random
 
 
 def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
@@ -34,31 +35,43 @@ def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
         return bitcast_to_float
 
 
-def flipAdjacentBits(number_to_flip, probability=0.001, burstLength: int = 1):
-    # TODO do not hardcode types
-    if not isinstance(number_to_flip, np.float32):
-        raise ValueError("Works only for float32")
-        burstLength = max(burstLength, 33)
+def flipAdjacentBits(value: float, n_bits: int, probability: float) -> float:
+    """
+    Flips `n_bits` adjacent bits in a `float32` value at a random starting position,
+    based on a given probability.
 
-    if burstLength < 0:
-        raise ValueError("Cannot create bursterror of negative amount of adjacent bits")
-    if burstLength == 0:
-        return number_to_flip
+    Parameters:
+        value (float): The original float32 value.
+        n_bits (int): The number of adjacent bits to flip.
+        probability (float): The probability (0 to 1) that the group of bits is flipped.
 
-    random_numbers = np.random.rand(33)
-    pivot = np.where(random_numbers < probability)[0]
-    startIndex = max(0, pivot + burstLength)
-    flipped_bit_positions = random_numbers[startIndex, pivot]
-    if flipped_bit_positions.size == 0:
-        return number_to_flip
+    Returns:
+        float: The modified float32 value after flipping bits.
+    """
 
-    for pos in flipped_bit_positions:
-        flip_mask = tf.bitwise.left_shift(tf.cast(1, tf.int32), pos)
-        bitcast_to_int32 = tf.bitcast(number_to_flip, tf.int32)
-        flipped_value = tf.bitwise.bitwise_xor(flip_mask, bitcast_to_int32)
-        bitcast_to_float = tf.bitcast(flipped_value, tf.float32)
+    # Convert float32 to 32-bit binary representation
+    packed = struct.pack('>f', value)
+    int_value = struct.unpack('>I', packed)[0]
 
-    return bitcast_to_float
+    # Convert to binary list of bits
+    bit_list = list(f'{int_value:032b}')
+
+    # Choose a random starting index for adjacent bits
+    start_index = random.randint(0, 32 - n_bits)
+
+    # Flip adjacent bits based on the probability
+    if random.random() < probability:
+        for i in range(start_index, start_index + n_bits):
+            bit_list[i] = '1' if bit_list[i] == '0' else '0'
+
+    # Convert back to integer
+    flipped_int_value = int("".join(bit_list), 2)
+
+    # Convert back to float32
+    flipped_packed = struct.pack('>I', flipped_int_value)
+    flipped_value = struct.unpack('>f', flipped_packed)[0]
+
+    return flipped_value
 
 
 def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype) -> tf.Tensor:
