@@ -1,6 +1,8 @@
 import tensorflow as tf
 
 import numpy as np
+import struct
+import random
 
 
 def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
@@ -33,7 +35,46 @@ def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
         return bitcast_to_float
 
 
-def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype):
+def flipAdjacentBits(value: float, burstLength: int, probability: float) -> float:
+    """
+    Flips `n_bits` adjacent bits in a `float32` value at a random starting position,
+    based on a given probability.
+
+    Parameters:
+        value (float): The original float32 value.
+        n_bits (int): The number of adjacent bits to flip.
+        probability (float): The probability (0 to 1) that the group of bits is flipped.
+
+    Returns:
+        float: The modified float32 value after flipping bits.
+    """
+
+    # Convert float32 to 32-bit binary representation
+    packed = struct.pack('>f', value)
+    int_value = struct.unpack('>I', packed)[0]
+
+    # Convert to binary list of bits
+    bit_list = list(f'{int_value:032b}')
+
+    # Choose a random starting index for adjacent bits
+    start_index = random.randint(0, 32 - burstLength)
+
+    # Flip adjacent bits based on the probability
+    if random.random() < probability:
+        for i in range(start_index, start_index + burstLength):
+            bit_list[i] = '1' if bit_list[i] == '0' else '0'
+
+    # Convert back to integer
+    flipped_int_value = int("".join(bit_list), 2)
+
+    # Convert back to float32
+    flipped_packed = struct.pack('>I', flipped_int_value)
+    flipped_value = struct.unpack('>f', flipped_packed)[0]
+
+    return flipped_value
+
+
+def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype) -> tf.Tensor:
     if dtype is np.float32:
         x_bits = tf.bitcast(input, tf.int32)
         randomValues = tf.random.uniform(shape=tf.shape(x_bits), minval=0.0, maxval=1.0)

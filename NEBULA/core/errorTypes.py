@@ -29,13 +29,11 @@ class ErrorTypes(Enum):
 
     @staticmethod
     def _injectBurstError(layername: str, layerMem: dict, probability: float):
-        # TODO implement this
-        raise NotImplementedError
+        return InjectionImpl._concurrentBurstInjection(layername, layerMem, probability)
 
     @staticmethod
     def _injectStuckAtError(layername: str, layerMem: dict, probability: float):
-        # TODO implement this
-        raise NotImplementedError
+        raise NotImplementedError("Stuck at Error is not implemented yet")
 
     @staticmethod
     def _injectCustom(layername: str, layerMem: dict, probability: float):
