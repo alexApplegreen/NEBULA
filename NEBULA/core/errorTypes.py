@@ -33,7 +33,7 @@ class ErrorTypes(Enum):
 
     @staticmethod
     def _injectStuckAtError(layername: str, layerMem: dict, probability: float):
-        return InjectionImpl._concurrentStuckAtInjection(layername, layerMem, probability)
+        raise NotImplementedError("Stuck at Error is not implemented yet")
 
     @staticmethod
     def _injectCustom(layername: str, layerMem: dict, probability: float):
