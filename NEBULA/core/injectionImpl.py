@@ -13,7 +13,7 @@ from threading import get_ident
 
 import numpy as np
 
-from NEBULA.utils.commons import flipFloat
+from NEBULA.utils.commons import flipAdjacentBits, flipFloat
 from NEBULA.utils.logging import getLogger
 
 
@@ -84,7 +84,7 @@ class InjectionImpl:
                 if weight.dtype == np.float32:
                     flattenedWeights = weight.flatten()
                     for i in range(len(flattenedWeights)):
-                        flattenedWeights[i] = flipFloat(flattenedWeights[i], probability=probability)
+                        flattenedWeights[i] = flipAdjacentBits(flattenedWeights[i], probability=probability, burstLength=2)
                     newWeight = flattenedWeights.reshape(shape)
                     newWeights.append(newWeight)
                 else:

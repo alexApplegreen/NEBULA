@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 import numpy as np
+import math
 
 
 def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
@@ -31,6 +32,33 @@ def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
         return 0
     else:
         return bitcast_to_float
+
+
+def flipAdjacentBits(number_to_flip, probability=0.001, burstLength: int = 1):
+    # TODO do not hardcode types
+    if not isinstance(number_to_flip, np.float32):
+        raise ValueError("Works only for float32")
+        burstLength = max(burstLength, 33)
+
+    if burstLength < 0:
+        raise ValueError("Cannot create bursterror of negative amount of adjacent bits")
+    if burstLength == 0:
+        return number_to_flip
+
+    random_numbers = np.random.rand(33)
+    pivot = np.where(random_numbers < probability)[0]
+    startIndex = max(0, pivot + burstLength)
+    flipped_bit_positions = random_numbers[startIndex, pivot]
+    if flipped_bit_positions.size == 0:
+        return number_to_flip
+
+    for pos in flipped_bit_positions:
+        flip_mask = tf.bitwise.left_shift(tf.cast(1, tf.int32), pos)
+        bitcast_to_int32 = tf.bitcast(number_to_flip, tf.int32)
+        flipped_value = tf.bitwise.bitwise_xor(flip_mask, bitcast_to_int32)
+        bitcast_to_float = tf.bitcast(flipped_value, tf.float32)
+
+    return bitcast_to_float
 
 
 def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype) -> tf.Tensor:
