@@ -97,7 +97,6 @@ class InjectionImpl:
             InjectionImpl._logger.error(f"Cannot access argument {e.args[0]} of shared memory layer {layername}")
             return layername, weights
 
-
     @staticmethod
     def _shmHelper(layerMem: dict) -> list[np.ndarray]:
         weights = []

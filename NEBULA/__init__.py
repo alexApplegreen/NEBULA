@@ -1,4 +1,4 @@
-from NEBULA.utils.logging import getLogger, setLoggingLevel
+from NEBULA.utils.logging import setLoggingLevel
 from NEBULA.core.legacyInjector import LegacyInjector
 from NEBULA.core.injector import Injector
 from NEBULA.core.trainingInjector import TrainingInjector
