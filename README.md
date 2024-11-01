@@ -1,4 +1,5 @@
-<img src="https://github.com/user-attachments/assets/0a09265f-17f7-4ac2-b405-72ce12dd21f5" height="500px">
+
+<img src="https://github.com/user-attachments/assets/f489a7ea-0b4c-4a2a-8cb6-0326dade6a80" height="500px">
 
 # NEBULA (Neural Error Bit Upset and Learning Adaptation)
 NEBULA is a library providing tools for testing out the impact of radiation-induced biterrors
@@ -10,6 +11,7 @@ There are 2 main features:
 For static errorinjection the `injector` class provides a multithreaded implementation
 leveraging the multiprocessing library to time-efficiently alter a potentially large number of weights
 inside the model.
+
 
 For Fault Aware Training applications, the `TrainingInjector` class can be used to inject biterrors into
 the model during training. The Traininginjector will add a pertubating layer to a given model which
