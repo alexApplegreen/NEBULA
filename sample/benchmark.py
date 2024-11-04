@@ -2,7 +2,7 @@ import time
 
 import keras
 
-from NEBULA import LegacyInjector, Injector
+from NEBULA import LegacyInjector, Injector, ErrorTypes
 
 if __name__ == '__main__':
     inputs = keras.Input(shape=(37,))
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     endOld = time.time()
 
     startNew = time.time()
-    injector.injectError(model)
+    injector.injectError(model, ErrorTypes.NORMAL)
     endNew = time.time()
 
     durationOld = endOld - startOld
