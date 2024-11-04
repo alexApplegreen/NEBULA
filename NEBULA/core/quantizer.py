@@ -36,7 +36,8 @@ class Quantizer():
         Returns a new instance of keras.model
         The original model is not modified
         """
-        # TODO actually quantize model
+        # TODO actually quantize model: set backend autocast to None might work
+        # Vgl. layer.py in keras line 880
         quantModel = clone_model(model)
         return quantModel
 
