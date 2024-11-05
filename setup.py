@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="NEBULA",
+    name="NEBULANN",
     version="0.1",
     description="Error injection and quantized training lib for NNs",
     author="Alexander Tepe",
@@ -9,6 +9,7 @@ setup(
     packages=find_packages(),
     license="MIT",
     install_requires=[
+        "setuptools"
         "tensorflow",
         "numpy",
         "python-dotenv"
