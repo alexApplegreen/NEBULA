@@ -18,7 +18,13 @@ the model during training. The Traininginjector will add a pertubating layer to 
 is inactive during inference, but will add statistic noise in the form of bit errors to the networks weights.
 
 
-## Setup
+### Setup
+Either install using pip:
+```(bash)
+pip install NEBULANN
+```
+
+OR build from sources:
 create virtual env (optional but recommended):
 ```(bash)
 python3 -m venv venv
