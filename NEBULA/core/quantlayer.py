@@ -1,6 +1,8 @@
 from keras import Layer
 
 class QuantLayer(Layer):
+    """Layer subclass which supports arbitrary datatypes
+    """
     # TODO build this
 
     def __init__(self, **kwargs):
