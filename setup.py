@@ -9,7 +9,7 @@ setup(
     packages=find_packages(),
     license="MIT",
     install_requires=[
-        "setuptools"
+        "setuptools",
         "tensorflow",
         "numpy",
         "python-dotenv"
