@@ -7,7 +7,7 @@ from tensorflow.keras.models import load_model
 
 from NEBULA import Injector, LegacyInjector
 
-SAMPLESIZE = 10
+SAMPLESIZE = 100000
 
 if __name__ == "__main__":
     # TODO use different models with more layers
