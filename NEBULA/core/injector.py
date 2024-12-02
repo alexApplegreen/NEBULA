@@ -89,7 +89,7 @@ class Injector(BaseInjector):
         # inject error
         results = self._injectToWeights(errorType)
         self._reconstructModel(model, results)
-        self._history.push(model.layers)
+        # self._history.push(model.layers)
         self._deleteShareMem()
         self._sharedWeights = _initialize_shared_weights(model.layers)
 
