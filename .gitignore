@@ -164,3 +164,4 @@ cython_debug/
 # misc
 pyproject.toml
 sampledata
+sample/*.csv
