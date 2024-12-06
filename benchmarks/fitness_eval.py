@@ -31,7 +31,7 @@ if __name__ == "__main__":
     with open("./results_acc_mnist.csv", "w+") as file:
         csvwriter = csv.writer(file)
 
-        for ber in np.linspace(0.0, 0.00005, 10):
+        for ber in np.linspace(0, 0.00005, 10):
             injector.probability = ber
             injector.injectError(model, ErrorTypes.NORMAL)
             score = model.evaluate(x_test, y_test, verbose=0)
