@@ -19,7 +19,6 @@ def avgtime(time, i):
     return time_left
 
 if __name__ == "__main__":
-    # TODO use different models with more layers
     model = load_model("../sample/sampledata/big_mnist_model.h5")
 
     with open("results_MNIST_SEI_old.csv", "w+") as file_old:
