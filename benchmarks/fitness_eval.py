@@ -8,7 +8,7 @@ from tensorflow.keras.utils import to_categorical
 
 from NEBULA.core import Injector, ErrorTypes
 
-SAMPLESIZE = 1000
+SAMPLESIZE = 1e6  # million tries
 
 if __name__ == "__main__":
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     with open("./results_acc_mnist.csv", "w+") as file:
         csvwriter = csv.writer(file)
         counter = 1
-        for ber in np.linspace(0.0, 5e-06, SAMPLESIZE):
+        for ber in np.linspace(0.0, 3e-06, SAMPLESIZE):
             injector.probability = ber
             injector.injectError(model, ErrorTypes.NORMAL)
             score = model.evaluate(x_test, y_test, verbose=0)
