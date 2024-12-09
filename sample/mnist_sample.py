@@ -20,6 +20,7 @@ if __name__ == '__main__':
 
     # Load the pre-trained model from .h5 file either with or without FAT
     model = loadFatModel('sampledata/fat_mnist_model.h5', compile=False)
-    weightsBefore = model.get_weights()
+
+
 
     model.summary()
