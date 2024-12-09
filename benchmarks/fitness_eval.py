@@ -4,7 +4,6 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from tensorflow.keras.models import load_model
-from tensorflow.keras.utils import to_categorical
 
 from NEBULA.core import Injector, ErrorTypes
 
