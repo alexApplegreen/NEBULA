@@ -6,7 +6,7 @@ from tensorflow.keras.models import load_model
 
 from NEBULA.core import Injector
 
-SAMPLESIZE = 10  # Modify this to set number of measurements
+SAMPLESIZE = 200  # Modify this to set number of measurements
 COUNTER = 0
 
 def avgtime(time, i):

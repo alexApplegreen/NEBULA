@@ -8,6 +8,8 @@ from tensorflow.keras.utils import to_categorical
 
 from NEBULA.core import Injector, ErrorTypes
 
+SAMPLESIZE = 1000
+
 if __name__ == "__main__":
 
     # Load MNIST dataset
@@ -30,11 +32,12 @@ if __name__ == "__main__":
 
     with open("./results_acc_mnist.csv", "w+") as file:
         csvwriter = csv.writer(file)
-
-        for ber in np.linspace(0, 0.00005, 10):
+        counter = 1
+        for ber in np.linspace(0.0, 5e-06, SAMPLESIZE):
             injector.probability = ber
             injector.injectError(model, ErrorTypes.NORMAL)
             score = model.evaluate(x_test, y_test, verbose=0)
             injector.undo(model)
-            print(f"BER: {ber}% accuracy: {score[1]}")
+            print(f"cycle{counter}/{SAMPLESIZE} BER: {ber}% accuracy: {score[1]}")
             csvwriter.writerow([ber, score[1]])
+            counter += 1
