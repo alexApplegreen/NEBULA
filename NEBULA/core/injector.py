@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-injector.py
-    injector to use multiprocessing to inject errors
-"""
-
 __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
@@ -22,7 +17,14 @@ from NEBULA.utils.logging import getLogger
 
 
 def _initialize_shared_weights(layers: list[Layer]) -> dict:
-    """Initialize shared memory for each layer's weights."""
+    """Helper function to initialize shared memory for each layer's weights
+
+    Parameters:
+        layers (list[Layer]): layers of the model under test
+
+    Returns:
+        Dictionary mapping layername to shared memory buffer
+    """
     shared_weights = {}
     for layer in layers:
         layer_name = layer.name
@@ -41,19 +43,35 @@ def _initialize_shared_weights(layers: list[Layer]) -> dict:
 
 
 def _create_process_pool(layers: list[Layer]) -> mp.Pool:
-    """Create a process pool with one process per layer."""
+    """Helper to create a process pool with one process per layer
+
+    Parameters:
+        layers (list[Layer]): layers of the model under test
+
+    Returns:
+        multiprocessing.Pool pool of processes
+    """
     num_processes = len(layers)
     return mp.Pool(num_processes)
 
 
 class Injector(BaseInjector):
     """Class Injector:
+
     encapsulates all injection and other comfort functions towards
     modifying a model
     The injector will create a processpool at instantiation with one process
     per layer of the given model. These are used to inject errors into the model.
     This class also yields access to the history of changes made to the model through
     error injection
+
+    Attributes:
+        _layers (list[Layer]): Layers of the model under test
+        _probability (float): Default Bit Error Rate
+        _logger (Logger) Default logger
+        _history (History): Mechanism to save history of error injections to model under test
+        _process_pool (multiprocessing.Pool): Pool of processes
+        _sharedWeights (dict): Dictionary mapping from layer name to shared memory buffer
     """
 
     _logger: Logger
@@ -61,6 +79,13 @@ class Injector(BaseInjector):
     _sharedWeights: dict
 
     def __init__(self, layers: list[Layer], probability: float = 0.01) -> None:
+        """Initializes an injector
+
+        Parameters:
+            layers (list[Layer]): Layers of model under test
+            probability (float): Default Bit Error Rate
+        """
+
         super().__init__(layers, probability)
         self._logger = getLogger(__name__)
 
@@ -82,11 +107,13 @@ class Injector(BaseInjector):
         with a Bit Error Rate of the given probability.
         This method applies the given errortype to all layers of the model.
         It is possible to override this method to use different errortypes per modellayer
+
+        Parameters:
+            model (Model): The model under test
+            errorType (ErrorTypes): The error type to apply to the model
         """
-        # TODO test Errortypes
         self._logger.debug(f"Injecting error with probability of {self._probability}")
 
-        # inject error
         results = self._injectToWeights(errorType)
         self._reconstructModel(model, results)
         self._history.push(model.layers)
@@ -100,8 +127,13 @@ class Injector(BaseInjector):
         Since python parameters are passed as object references, the dictionary is
         modified in place.
         This also applies the special errortype strategy given by the callable enum value
+
+        Parameters:
+            errorType (ErrorTypes): The error type to apply to the layers
+
+        Returns:
+            dict: Mapping from layer weight to array of modified values
         """
-        # Apply the error injection function to each layer in parallel
         results = self._process_pool.starmap_async(
             errorType,  # this is basically a function
             [(layer, self._sharedWeights[layer], self._probability) for layer in self._sharedWeights.keys()]
@@ -109,7 +141,12 @@ class Injector(BaseInjector):
         return results.get()
 
     def undo(self, model: Model) -> None:
-        """Undo change made by injecting error into weight"""
+        """Undo change made by injecting error into weight
+        This modifies the model in place!
+
+        Parameters:
+            model (Model): The model to apply the changes to
+        """
         try:
             super().undo(model)
         except ValueError:
