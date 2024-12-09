@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 
 if __name__ == "__main__":
-    df = pd.read_csv("../sample/results_MNIST_SEI_new.csv", names=["new"])
-    df2 = pd.read_csv("../sample/results_MNIST_SEI_old.csv", names=["old"])
+    df = pd.read_csv("results_MNIST_SEI_mem_new.csv", names=["new"])
+    df2 = pd.read_csv("results_MNIST_SEI_mem_old.csv", names=["old"])
 
     df = pd.concat([df, df2], axis=1)
     df['index'] = range(1, len(df) + 1)
@@ -15,9 +15,18 @@ if __name__ == "__main__":
     avg_runtime_new = np.average(df['new'])
     avg_runtime_old = np.average(df['old'])
     df['new'] = df["new"].apply(lambda x: x / 1000)
+    df['new'] = df['new'].apply(lambda x: x - 476.29)
     df['old'] = df["old"].apply(lambda x: x / 1000)
     std_new = df['new'].std()
     std_old = df['old'].std()
+
+    std_new = df['new'].std()
+    std_old = df['old'].std()
+
+    avg_new = np.average(df['new'])
+    avg_old = np.average(df['old'])
+
+    print(f"std old: {std_old}, std new: {std_new}, avg old: {avg_old}, avg new: {avg_new}")
 
     # plot
     fig, ax = plt.subplots()
@@ -36,7 +45,8 @@ if __name__ == "__main__":
     labels = ['NEBULA', 'Legacy']
     ax.xaxis.set_major_locator(ticker.FixedLocator(positions))
     ax.xaxis.set_major_formatter(ticker.FixedFormatter(labels))
-    ax.set_title("Runtime Comparison MNIST model")
+    ax.set_yscale('log')
+    ax.set_title("Memory Usage Comparison MNIST model")
     ax.set_xlabel("Implementation")
-    ax.set_ylabel('Runtime in ms')
+    ax.set_ylabel('Memory Usage in log kB')
     plt.show()

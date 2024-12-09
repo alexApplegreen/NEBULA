@@ -166,3 +166,4 @@ pyproject.toml
 sampledata
 sample/*.csv
 benchmark/*.csv
+benchmark/results/
