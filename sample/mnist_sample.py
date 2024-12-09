@@ -19,30 +19,8 @@ if __name__ == '__main__':
     y_test = to_categorical(y_test, 10)
 
     # Load the pre-trained model from .h5 file either with or without FAT
-    model = loadFatModel('sampledata/fat_mnist_model.h5', compile=False)
-    # model = load_model('sampledata/mnist_model.h5', compile=False)
+    # model = loadFatModel('sampledata/fat_mnist_model.h5', compile=False)
+    model = load_model('sampledata/mnist_model.h5', compile=False)
     weightsBefore = model.get_weights()
 
-    injector = Injector(model.layers, probability=0.00005)
-    injector.injectError(model)
-    weightsAfter = model.get_weights()
-
-    # Preprocess the image data
-    # Step 1: Load and resize image to 28x28 pixels
-    img = Image.open('sampledata/six.png').resize((28, 28))
-
-    # Step 2: Convert to grayscale
-    img = img.convert('L')  # 'L' mode means grayscale
-
-    # Step 3: Convert to NumPy array and normalize pixel values (0-1 range)
-    img_array = np.array(img) / 255.0
-
-    # Step 4: Reshape the array to match MNIST model input (28, 28, 1)
-    img_array = img_array.reshape(1, 28, 28, 1)
-
-    preds = model.predict(img_array)
-    print(preds)
-
-    max = np.max(preds)
-    output = np.where(preds == max)
-    print(f"Prediction: {output[1]}, certainty: {max}")
+    model.summary()
