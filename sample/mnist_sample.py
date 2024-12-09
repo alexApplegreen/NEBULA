@@ -19,8 +19,7 @@ if __name__ == '__main__':
     y_test = to_categorical(y_test, 10)
 
     # Load the pre-trained model from .h5 file either with or without FAT
-    # model = loadFatModel('sampledata/fat_mnist_model.h5', compile=False)
-    model = load_model('sampledata/mnist_model.h5', compile=False)
+    model = loadFatModel('sampledata/fat_mnist_model.h5', compile=False)
     weightsBefore = model.get_weights()
 
     model.summary()

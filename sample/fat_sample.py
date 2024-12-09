@@ -3,7 +3,6 @@ from tensorflow.keras import layers, models
 import numpy as np
 
 from NEBULA import TrainingInjector
-from NEBULA import LegacyInjector
 
 # Load MNIST dataset
 mnist = tf.keras.datasets.mnist
@@ -28,7 +27,7 @@ model = models.Sequential([
     layers.Dense(10, activation='softmax')  # 10 classes for MNIST
 ])
 
-# inject error during training
+# inject errors during training
 ti = TrainingInjector(probability=0.005, clipping=(-1.0, 1.0))
 model = ti.attach(model, 3)
 
@@ -44,5 +43,3 @@ model.fit(x_train, y_train, epochs=5, batch_size=32, validation_data=(x_test, y_
 
 # Save the trained model to an h5 file
 model.save('sampledata/fat_mnist_model.h5')
-
-print("Model saved to mnist_model.h5")
