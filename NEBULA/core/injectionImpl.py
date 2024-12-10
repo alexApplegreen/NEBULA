@@ -14,7 +14,6 @@ from NEBULA.utils.logging import getLogger
 
 
 def handleShmError(func):
-    # TODO test this
     """Errorhandler that wraps annotated functions
     In case of errors when parsing the shared memory this wrapper will handle the error
 

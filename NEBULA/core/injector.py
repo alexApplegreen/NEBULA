@@ -28,7 +28,6 @@ def _initialize_shared_weights(layers: list[Layer]) -> dict:
     shared_weights = {}
     for layer in layers:
         layer_name = layer.name
-        # TODO probably add dtype in case we're getting funky with quantization
         shared_weights[layer_name] = {"membuf": [], "shapes": []}
 
         for weight in layer.get_weights():
