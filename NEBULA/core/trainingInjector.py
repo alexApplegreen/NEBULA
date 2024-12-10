@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-TrainingInjector.py
-    injector to attach to untrained model to simulate errors during training
-"""
-
 __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
@@ -19,6 +14,15 @@ from NEBULA.utils.logging import getLogger
 
 
 def _buildSequentialModel(model: Model, noiseLayer: Layer, index: int) -> Model:
+    """Helper to insert NoiseLayer into sequential model
+
+    Parameters:
+        model (Model): The model into which the layer is to be inserted
+        noiseLayer (Layer): The layer instance which should be inserted into the model
+        index (int): The position after which the new layer should be inserted into the model
+    Returns:
+        Model: The modified model instance
+    """
     layers = model.layers
     pre_layers = layers[:index]  # layers before the insertion point
     post_layers = layers[index:]  # layers after the insertion point
@@ -35,6 +39,15 @@ def _buildSequentialModel(model: Model, noiseLayer: Layer, index: int) -> Model:
 
 
 def _buildFunctionalModel(model: Model, noiseLayer: Layer, index: int) -> Model:
+    """Helper to insert NoiseLayer into Functional model
+
+    Parameters:
+        model (Model): The model into which the layer is to be inserted
+        noiseLayer (Layer): The layer instance which should be inserted into the model
+        index (int): The position after which the new layer should be inserted into the model
+    Returns:
+        Model: The modified model instance
+    """
     inputs = model.input
     x = inputs
 
@@ -53,6 +66,11 @@ class TrainingInjector():
     by adding a noiselayer to the given model.
     This layer will produce noise during the learning phase of the network.
     During inference the layer will pass all values from the n-1th layer through
+
+    Attributes:
+        _logger (Logger): Default logger
+        _probability (float): Default Bit Error Rate
+        _clipping (tuple): Min and max value to clip the weight values to during training
     """
 
     _logger: Logger
@@ -60,6 +78,12 @@ class TrainingInjector():
     _clipping: tuple | None
 
     def __init__(self, probability: float = 0.01, clipping: tuple | None = None) -> None:
+        """Initializes a new TrainingInjector instance
+
+        Parameters:
+            probability (float): Default Bit Error Rate
+            clipping (tuple): Min and max value to clip the weight values to during training
+        """
         if probability < .0:
             raise ValueError("BER cannot be negative")
         self._logger = getLogger(__name__)
@@ -72,6 +96,13 @@ class TrainingInjector():
         cause noise during backpropagation in the training of the model.
         index parameter specifies where in the model to attach the pertubating layer.
         The placement has severe impact on the trained model
+
+        Parameters:
+            model (Model): Model to insert NoiseLayer into
+            index (int): Index after which the NoiseLayer should be inserted into the model
+
+        Returns:
+            Model: Modified model instance
         """
         if index < 0:
             raise ValueError("Index cannot be negative")

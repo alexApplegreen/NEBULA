@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-logging.py:
-    All logging related methods for API internal logging
-"""
-
 __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
@@ -47,6 +42,12 @@ def getLogger(name: str) -> logging.Logger:
     """Get a logger instance with the given modulename
     Only one logger per modulename will be assigned a handler
     this way, the amount of resources consumed for libray imports stays slim
+
+    Parameters:
+        name (str): Name of the instance that shall be equipped with a logger
+
+    Returns:
+        Logger: Named instance of logger
     """
 
     if name not in _loggers:
@@ -55,8 +56,6 @@ def getLogger(name: str) -> logging.Logger:
 
         if not logger.hasHandlers():
             console_handler = logging.StreamHandler()
-            # console_handler.setLevel(_LOG_LEVEL)
-
             logger.addHandler(console_handler)
 
         _loggers[name] = logger
@@ -73,6 +72,10 @@ def setLoggingLevel(logLevel: int | str, name: str | None = None) -> None:
         ERROR
         CRITICAL
     if name param is omitted, all loggers with assigned handlers will be set to specified level
+
+    Parameters:
+        logLevel (int | str): Desired logging level
+        name (str): Name of instance
     """
     if name is None:
         for logger in _loggers.values():

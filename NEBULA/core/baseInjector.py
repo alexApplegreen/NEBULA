@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-BaseInjector.py:
-    base class for all injectors
-"""
-
 __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"

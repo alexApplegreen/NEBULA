@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+
+__author__      = "Alexander Tepe"
+__email__       = "alexander.tepe@hotmail.de"
+__copyright__   = "Copyright 2024, Planet Earth"
+
 from enum import Enum
 from logging import getLogger
 
@@ -5,14 +11,16 @@ from NEBULA.core.injectionImpl import InjectionImpl
 
 
 class ErrorTypes(Enum):
-    # TODO test all of this
-    """All Available Errortypes"""
+    """All Available Errortypes
+    """
     NORMAL = "_injectNormalError"
     BURST = "_injectBurstError"
     STUCKAT = "_injectStuckAtError"
 
     def __new__(cls, func_name):
-        # Assign function to each enum instance
+        """Overwrite class constructor
+        Assign function to each enum instance
+        """
         obj = object.__new__(cls)
         obj._value_ = func_name
         obj.func = getattr(cls, func_name)
@@ -37,8 +45,7 @@ class ErrorTypes(Enum):
 
     @staticmethod
     def _injectCustom(layername: str, layerMem: dict, probability: float):
-        """
-        used to enforce signature to ensure it works in multiprocessing env
+        """ Helper function used to enforce signature to ensure it works in multiprocessing env
         when user subclasses enum class to add own errortypes
         """
         pass
