@@ -94,6 +94,9 @@ class Injector(BaseInjector):
             self._process_pool = _create_process_pool(layers)
 
     def __del__(self):
+        """Destructor
+        Safely delete process pool and shared memory resources
+        """
         self._logger.debug("Closing Process Pool and deleting shared memory")
         if self._process_pool is not None:
             self._process_pool.close()

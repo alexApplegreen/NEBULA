@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-"""
-noiseLayer.py
-    Class to mimic noise during training
-"""
-
 __author__      = "Alexander Tepe"
 __email__       = "alexander.tepe@hotmail.de"
 __copyright__   = "Copyright 2024, Planet Earth"
@@ -24,7 +19,12 @@ class NoiseLayer(Layer):
     This class is a subclass of keras.layers.layer
     and can be used as such.
     It can be added to any model and will take the shape of the previous layer
-    During training, the weights will add noise to the network during forwardpropagation
+    During training, the weights will add noise to the network during forward propagation
+
+    Attributes:
+        _logger (Logger): Default logger
+        _errorProbability (float): Default Bit Error Rate
+        _clipping (tuple): Min and max value to clip the weight values to during training
     """
 
     _logger: Logger
@@ -32,6 +32,13 @@ class NoiseLayer(Layer):
     _clipping: None | tuple = None
 
     def __init__(self, probability: float = 0.01, clipping: tuple | None = None, **kwargs):
+        """Initlializes a NoiseLayer instance
+
+        Parameters:
+            probability (float): Default Bit Error Rate
+            clipping (tuple): Min and max value to clip the weight values to during training
+            kwargs (dict): Keyword parameters of the Layer parent class
+        """
         super().__init__(**kwargs)
         self.trainable = False
         self._logger = getLogger(__name__)
@@ -43,7 +50,7 @@ class NoiseLayer(Layer):
         This method is called by keras during traning.
         While feeding the data through the model (before evaluating the loss function)
         this will take the values from the preceeding layers and modfiy them with a given probability.
-        This will pertubate the results of the model during training.
+        This will perturbate the results of the model during training.
         """
         if training is True:
             self._logger.debug(f"injecting errors during training with BER of {self._errorProbability}")
@@ -58,12 +65,15 @@ class NoiseLayer(Layer):
     def _outerHelper(self, x):
         return flipTensorBits(x, probability=self._errorProbability, dtype=np.float32)
 
-    def _parseClipping(self, clipping) -> None:
+    def _parseClipping(self, clipping: tuple) -> None:
         """Set the min and max clipping values as tuple
         helper function to set the min and max values for clipping of the layer's weights.
         structure of an accepted tuple: (min, max)
         if tuple does not fit above structure, clipping will not be used.
         Also values in tuple must be numerics
+
+        Parameters:
+            clipping (tuple): Min and max value to clip the weight values to during training
         """
         if clipping is None:
             return

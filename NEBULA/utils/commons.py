@@ -5,9 +5,23 @@ import struct
 import random
 
 
-def flipFloat(number_to_flip, data_type=32, probability=0.001, check=-1):
+def flipFloat(
+    number_to_flip: tf.Tensor,
+    data_type: int = 32,
+    probability: float = 0.001,
+    check: int = -1
+) -> tf.Tensor:
     """Helper function which flips bits in a given memory range with a given probability
     returns the modified float number as a tf.tensor
+
+    Parameters:
+        number_to_flip (float): Original value to modify
+        data_type (int): Length of the memory word
+        probability (float): Bit Error Rate
+        check (int): Used to secure the input data type
+
+    Returns:
+        Tensor: modified value
     """
     random_numbers = np.random.rand(data_type + 1)
     flipped_bit_positions = np.where(random_numbers < probability)[0]
@@ -42,7 +56,7 @@ def flipAdjacentBits(value: float, burstLength: int, probability: float) -> floa
 
     Parameters:
         value (float): The original float32 value.
-        n_bits (int): The number of adjacent bits to flip.
+        burstLength (int): The number of adjacent bits to flip.
         probability (float): The probability (0 to 1) that the group of bits is flipped.
 
     Returns:
@@ -75,6 +89,17 @@ def flipAdjacentBits(value: float, burstLength: int, probability: float) -> floa
 
 
 def flipTensorBits(input: tf.Tensor, probability: float, dtype: np.dtype) -> tf.Tensor:
+    """New implementation of legacy flipFloat implementation
+    Binomially distributed random bit flips with given probability of exactly 1 bit
+
+    Parameters:
+        input (Tensor): input value to modify
+        probability (float): Bit Error Rate
+        dtype (dtype): Datatype of the input value
+
+    Returns:
+        Tensor: The modified value as a Tensor
+    """
     if dtype is np.float32:
         x_bits = tf.bitcast(input, tf.int32)
         randomValues = tf.random.uniform(shape=tf.shape(x_bits), minval=0.0, maxval=1.0)

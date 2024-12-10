@@ -142,9 +142,10 @@ class InjectionImpl:
 
     @staticmethod
     def _shmHelper(layerMem: dict) -> list[np.ndarray]:
-        """
+        """Helper Function for concurrent injection routines
+        Zips shared weight buffers and shapes for easy iteration
         Returns:
-            list[np.array]: ... ?
+            list[np.array]: zipped shared memory buffers and shapes
         """
         weights = []
         for shm, shape in zip(layerMem["membuf"], layerMem["shapes"]):
